@@ -156,6 +156,7 @@ cython_debug/
 
 
 *.log
+*.png
 tier_results/
 visual_figs/
 
