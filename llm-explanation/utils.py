@@ -6,6 +6,7 @@ from collections import Counter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from datasets import load_dataset   
+from pyreft import ReftModel
 
 
 def topk_intermediate_confidence_heatmap(forward_info, topk=5, layer_nums=32, left=0, right=33, dataset_size=100, output_dir=None):
@@ -61,9 +62,11 @@ def topk_intermediate_confidence_heatmap(forward_info, topk=5, layer_nums=32, le
 
 
 
-def load_model_and_tokenizer(model_path, dtype=torch.float16, device_map="auto"):
+def load_model_and_tokenizer(model_path, dtype=torch.bfloat16, device_map="", load_reft_model=False, reft_model_path="/home/ldn/baidu/reft-pytorch-codes/pyreft/examples/loreft/official_results/llama-7b-hf.ARC-Challenge.405a98a8-baa0-11ef-aad6-7cc2554dc4ec"):
     model = AutoModelForCausalLM.from_pretrained(model_path, output_hidden_states=True, device_map=device_map, load_in_8bit=True, torch_dtype=dtype)
     model.eval()
+    if load_reft_model:
+        model = ReftModel.load(reft_model_path, model)
     tokenizer = AutoTokenizer.from_pretrained(model_path)
     return model, tokenizer
 
