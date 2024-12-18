@@ -27,6 +27,8 @@ class TierModel(nn.Module):
     def __init__(self, config, model, **kwargs):
         super().__init__()
         self.config = config
+        self.num_interventions = len(config.representations)
+        self.position = config.position
         self.intervention_types = config.intervention_types
         self.representations = {}
         self.interventions = {}

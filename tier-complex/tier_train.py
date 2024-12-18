@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "6"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import uuid
 import torch
 from transformers import (
@@ -215,10 +215,8 @@ def train(args):
                 eval_dataset,
                 data_items,
                 trigger_tokens,
-                run_name,
                 args.eval_batch_size,
                 data_collator if args.task == "gule" else data_collator,
-                split,
                 args.greedy_decoding,
                 args.temperature,
                 args.top_p,

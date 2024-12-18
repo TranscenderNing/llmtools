@@ -1,7 +1,7 @@
 import json
 import os
 
-from utils import get_type_from_string
+from utils import get_type_from_string, dtype_mapping
 
 
 class TierConfig:
@@ -40,6 +40,9 @@ class TierConfig:
     @staticmethod
     def from_pretrained(load_directory):
         saved_config = json.load(open(os.path.join(load_directory, "config.json"), "r"))
+        saved_config["intervention_params"]["dtype"] = dtype_mapping[
+            saved_config["intervention_params"]["dtype"]
+        ]
         for representation, intervention_type in zip(
             saved_config["representations"], saved_config["intervention_types"]
         ):
@@ -49,6 +52,7 @@ class TierConfig:
         tier_config = TierConfig(
             representations=saved_config["representations"],
             intervention_params=saved_config["intervention_params"],
+            position=saved_config["position"],
         )
         return tier_config
 
@@ -64,10 +68,14 @@ class TierConfig:
         ]
 
         config_dict["intervention_params"] = self.intervention_params
-        for key, val in config_dict["intervention_params"].items():
-            if not isinstance(val, str):
-                config_dict["intervention_params"][key] = repr(val)
+        # special type
+        config_dict["intervention_params"]["dtype"] = repr(
+            config_dict["intervention_params"]["dtype"]
+        )
 
+        config_dict["intervention_types"] = [
+            repr(intervention_type) for intervention_type in self.intervention_types
+        ]
         config_dict["position"] = self.position
         with open(os.path.join(save_directory, "config.json"), "w") as f:
             json.dump(config_dict, f, indent=4)

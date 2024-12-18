@@ -28,6 +28,7 @@ class LoreftIntervention(nn.Module):
 
     def __init__(self, **kwargs):
         super(LoreftIntervention, self).__init__()
+        self.embed_dim = kwargs["embed_dim"]
         rotate_layer = LowRankRotateLayer(
             kwargs["embed_dim"], kwargs["low_rank_dimension"], init_orth=True
         ).to(kwargs["device"])

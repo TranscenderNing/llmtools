@@ -74,6 +74,7 @@ dtype_mapping = {
     "float16": torch.float16,
     "bfloat16": torch.bfloat16,
     "float8": "float8",
+    "torch.bfloat16": torch.bfloat16,
 }
 
 
@@ -382,6 +383,57 @@ def get_args():
     return args
 
 
+def get_pred_args():
+    parser = argparse.ArgumentParser(
+        description="A simple script that takes different arguments."
+    )
+    parser.add_argument("-task", "--task", type=str, default="commonsense")
+    parser.add_argument(
+        "-data_dir",
+        "--data_dir",
+        type=str,
+        default="/home/ldn/baidu/pyreft/paddle-version/loreft/datasets",
+    )
+    parser.add_argument("-eval_dataset", "--eval_dataset", type=str, default=None)
+    parser.add_argument(
+        "-model_path",
+        "--model_path",
+        type=str,
+        help="yahma/llama-7b-hf",
+        default="/home/ldn/.cache/huggingface/hub/models--yahma--llama-7b-hf/snapshots/cf33055e5df9cc533abd7ea4707bf727ca2ada75",
+    )
+    parser.add_argument(
+        "-tier_model_path",
+        "--tier_model_path",
+        type=str,
+        help="tier_model_path",
+        default="/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/tier_results/-home-ldn-.cache-huggingface-hub-models--yahma--llama-7b-hf-snapshots-cf33055e5df9cc533abd7ea4707bf727ca2ada75.commonsense.5c3d8600-bc78-11ef-b30b-7cc2554dc4ec",
+    )
+    parser.add_argument("-seed", "--seed", type=int, help="42", default=42)
+    parser.add_argument(
+        "-max_n_eval_example", "--max_n_eval_example", type=int, default=None
+    )
+    parser.add_argument("-eval_batch_size", "--eval_batch_size", type=int, default=8)
+    parser.add_argument(
+        "-output_dir", "--output_dir", type=str, default="./tier_results"
+    )
+    parser.add_argument("-test_split", "--test_split", type=str, default="test")
+    parser.add_argument("-max_length", "--max_length", type=int, help=512, default=512)
+    parser.add_argument(
+        "-dtype",
+        "--dtype",
+        type=str,
+        default="bfloat16",
+    )
+    # decoding params
+    parser.add_argument("-gd", "--greedy_decoding", action="store_true")
+    parser.add_argument("-t", "--temperature", type=float, default=None)
+    parser.add_argument("-top_p", "--top_p", type=float, default=None)
+    parser.add_argument("-top_k", "--top_k", type=float, default=None)
+    args = parser.parse_args()
+    return args
+
+
 def load_tokenizer(model_path, max_length=512):
     # load tokenizer
     tokenizer = AutoTokenizer.from_pretrained(
@@ -650,15 +702,13 @@ def compute_metrics(
     eval_dataset: Dataset,
     data_items: list,
     trigger_tokens: str,
-    run_name: str,
     batch_size: int = 4,
     data_collator=None,
-    split=None,
     greedy_decoding=False,
     temperature=None,
     top_p=None,
     top_k=None,
-    device="",
+    device=None,
 ):
     # switch the tokenizer mode first for generation tasks
     if task != "glue":
