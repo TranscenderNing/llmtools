@@ -1,0 +1,1 @@
+nohup python train.py > /home/ldn/baidu/reft-pytorch-codes/mix_finetune/logs/1.log 2>&1 &
