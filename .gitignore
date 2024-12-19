@@ -158,6 +158,7 @@ cython_debug/
 *.log
 *.png
 tier_results/
+tier_simple_results/
 visual_figs/
 
 # PyCharm
