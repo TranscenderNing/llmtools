@@ -53,7 +53,7 @@ def parse_args():
         help="Path to the pre-trained model"
     )
     parser.add_argument(
-        '--output_dir', type=str, default="./pruned_model_checkpoints",
+        '--output_dir', type=str, default="./pruned_model_checkpoints/llama7b-pruned",
         help="Directory to store the model output results"
     )
     parser.add_argument(
