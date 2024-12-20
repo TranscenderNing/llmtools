@@ -78,7 +78,8 @@ def load_raw_data(data_path="/home/ldn/baidu/pyreft/paddle-version/loreft/datase
     exp_dataset = exp_dataset.select([i for i in  range(100)])
     raw_dataset = []
     for i, data in enumerate(exp_dataset):
-        base_input = "%s\n" % (data["instruction"]) + trigger_tokens + data["answer"]
+        # base_input = "%s\n" % (data["instruction"]) + trigger_tokens + data["answer"]
+        base_input = "%s\n" % (data["instruction"]) + trigger_tokens
         raw_dataset.append(base_input)
     return raw_dataset
     

@@ -14,7 +14,7 @@ class LlmExplanation:
 
     def get_forward_info(self, dataset):
         for _, i in enumerate(dataset):
-            list_hs, tl_pair = self.step_forward(self.model, self.tokenizer, i)
+            list_hs, tl_pair = self.step_forward_normal(self.model, self.tokenizer, i)
             last_hs = [hs[:, -1, :] for hs in list_hs]
             self.forward_info[_] = {"hidden_states": last_hs, "top-value_pair": tl_pair}
 
@@ -51,7 +51,7 @@ class LlmExplanation:
                 tl_pair.append(layer_logits)
         res_hidden_states = []
         for _ in outputs.hidden_states:
-            res_hidden_states.append(_.detach().cpu().numpy())
+            res_hidden_states.append(_.float().detach().cpu().numpy())
         return res_hidden_states, tl_pair
 
 

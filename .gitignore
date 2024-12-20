@@ -159,6 +159,7 @@ cython_debug/
 *.png
 tier_results/
 tier_simple_results/
+pruned_model_checkpoints/
 visual_figs/
 
 # PyCharm

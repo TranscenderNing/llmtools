@@ -19,7 +19,7 @@ def load_representation_model(
         use_auth_token=True,
         torch_dtype=torch.bfloat16,
     )
-    get peft model
+
     config = MELoraConfig(
         r=[lora_r] * lora_n,
         lora_alpha=[lora_alpha] * lora_n,
