@@ -6,6 +6,7 @@ from tqdm import tqdm
 from typing import List, Dict, Tuple, Optional
 import os
 import torch
+import pickle
 
 IGNORE_INDEX = -100
 
@@ -22,7 +23,7 @@ class TierNLGDataset(Dataset):
         max_n_example=None,
         position="f7+l7",
         num_interventions=None,
-        task_config=None,
+        task_config=None
     ):
         super(TierNLGDataset, self).__init__()
 
@@ -42,10 +43,29 @@ class TierNLGDataset(Dataset):
         self.task_dataset = self.load_dataset()
 
         # tokenize and intervene
+        # self.result = []
+        # for id, data_item in enumerate(tqdm(self.task_dataset)):
+        #     tokenized = self.tokenize(data_item, id)
+        #     self.result.append(tokenized)
+        
         self.result = []
-        for id, data_item in enumerate(tqdm(self.task_dataset)):
-            tokenized = self.tokenize(data_item, id)
-            self.result.append(tokenized)
+        self.cache_path = os.path.join(data_path, f"position.{position}.interventions.{self.num_interventions}.max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
+        print(self.cache_path)
+        # 如果缓存文件存在，则加载缓存数据
+        if os.path.exists(self.cache_path):
+            print("Loading from cache...")
+            with open(self.cache_path, 'rb') as cache_file:
+                self.result = pickle.load(cache_file)
+        else:
+            print("Processing and caching results...")
+            for id, data_item in enumerate(tqdm(self.task_dataset)):
+                tokenized = self.tokenize(data_item, id)
+                self.result.append(tokenized)
+
+            # 保存结果到缓存文件
+            with open(self.cache_path, 'wb') as cache_file:
+                pickle.dump(self.result, cache_file)
+                
 
     def parse_positions(self, positions: str):
         # parse position

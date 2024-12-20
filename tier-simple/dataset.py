@@ -1,4 +1,5 @@
 import os
+import pickle
 from collections import defaultdict
 from copy import deepcopy
 from typing import Dict, List, Optional, Tuple
@@ -39,10 +40,28 @@ class NLGDataset(Dataset):
         self.task_dataset = self.load_dataset()
 
         # tokenize and intervene
+        # self.result = []
+        # for id, data_item in enumerate(tqdm(self.task_dataset)):
+        #     tokenized = self.tokenize(data_item, id)
+        #     self.result.append(tokenized)
+        
         self.result = []
-        for id, data_item in enumerate(tqdm(self.task_dataset)):
-            tokenized = self.tokenize(data_item, id)
-            self.result.append(tokenized)
+        self.cache_path = os.path.join(data_path, f"max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
+        print(self.cache_path)
+        # 如果缓存文件存在，则加载缓存数据
+        if os.path.exists(self.cache_path):
+            print("Loading from cache...")
+            with open(self.cache_path, 'rb') as cache_file:
+                self.result = pickle.load(cache_file)
+        else:
+            print("Processing and caching results...")
+            for id, data_item in enumerate(tqdm(self.task_dataset)):
+                tokenized = self.tokenize(data_item, id)
+                self.result.append(tokenized)
+
+            # 保存结果到缓存文件
+            with open(self.cache_path, 'wb') as cache_file:
+                pickle.dump(self.result, cache_file)
 
     def load_dataset(self):
         task_dataset = load_dataset("json", data_files=self.data_path, split="train")

@@ -22,10 +22,6 @@ class LowRankRotateLayer(nn.Module):
 
 
 class LoreftIntervention(nn.Module):
-    """
-    LoReFT(h) = h + R^T(Wh + b − Rh)
-    """
-
     def __init__(self, **kwargs):
         super(LoreftIntervention, self).__init__()
         self.embed_dim = kwargs["embed_dim"]
@@ -228,11 +224,12 @@ class MosLoRAIntervention(nn.Module):
 
 class RedIntervention(nn.Module):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs, keep_last_dim=True)
+        super(RedIntervention, self).__init__()
+        self.embed_dim = kwargs["embed_dim"]
         self.delta_vector = nn.ParameterDict(
             {
-                "activation_scaling": nn.Parameter(torch.ones(1, self.embed_dim)),
-                "activation_bias": nn.Parameter(torch.zeros(1, self.embed_dim)),
+                "activation_scaling": nn.Parameter(torch.ones(1, self.embed_dim).to(kwargs["device"])),
+                "activation_bias": nn.Parameter(torch.zeros(1, self.embed_dim).to(kwargs["device"])),
             }
         )
 

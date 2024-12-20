@@ -455,6 +455,7 @@ def load_base_model(model_path, dtype, device, tokenizer_len, need_resize=False)
         torch_dtype=dtype,
         device_map=device,
     )
+    print("model", model)
     if need_resize:
         model.resize_token_embeddings(tokenizer_len)
     return model, model.config

@@ -4,8 +4,13 @@ python tier_train.py
 
 
 ### commonsense 
-nohup python tier_train.py --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-.log 2>&1 &
+nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/llama7b-pruned --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-lora.log 2>&1 &
 
+
+
+RedIntervention +++++++
+
+nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/llama7b-pruned --greedy_decoding --max_n_train_example 100 -type RedIntervention --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-red.log 2>&1 &
 
 nohup python tier_train.py -task commonsense \
 -data_dir /home/ldn/baidu/pyreft/paddle-version/loreft/datasets \
