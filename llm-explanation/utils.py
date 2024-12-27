@@ -52,7 +52,7 @@ def topk_intermediate_confidence_heatmap(forward_info, topk=5, layer_nums=32, le
             else:
                 ax.text(j, i, word_labels[i, j], ha='center', va='center', color='black', fontsize=16)
 
-    ax.set_title(f'Top {topk} from Intermediate Hidden States \n (Layer {left}-{right})')
+    # ax.set_title(f'Top {topk} from Intermediate Hidden States \n (Layer {left}-{right})')
     ax.set_xlabel('Layer')
     ax.set_ylabel('Rank')
 

@@ -1,0 +1,1 @@
+nohup python tier_train.py --model_path /home/ldn/models/gpt2-medium --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 -e 8  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/gpt.log 2>&1 &

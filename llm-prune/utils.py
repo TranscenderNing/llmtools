@@ -61,7 +61,7 @@ def parse_args():
         help="Specify the model's data type, can be 'float32' or 'float16', default is 'float32'"
     )
     parser.add_argument(
-        '--list_pruned_blocks', type=str, default="18;19;20;21;22;23;24;25;26;27;28;29",
+        '--list_pruned_blocks', type=str, default="18;19;20;21;22;23;24;",
         help="List of blocks to prune (e.g., '18;19;20;21;22;23;24;25;26;27;28;29')"
     )
     parser.add_argument(

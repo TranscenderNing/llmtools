@@ -1,3 +1,4 @@
+import json
 import argparse
 import importlib
 import logging
@@ -823,3 +824,20 @@ def compute_metrics(
                     }
                 ]
     return generations, {f"eval/{dataset_name}": correct_count / total_count}
+
+
+
+def parse_json_result(file_path = "./tier_results/-home-ldn-baidu-reft-pytorch-codes-learning-llmtools-llm-prune-pruned_model_checkpoints-llama7b-pruned-3blocks.commonsense.b1bfa2e4-bf92-11ef-9456-7cc2554dc4ec/eval_results.json"):
+    with open(file_path, "r") as f:
+        acc_dict = json.load(f)
+    latex_str = []
+    nums = list(acc_dict.values())
+    nums.append(sum(nums) / len(nums)) 
+    nums = [num * 100 for num in nums]
+    print(nums)
+    nums_str = [f"{num:.1f}" for num in nums]
+    latex_str = ' & '.join(nums_str)
+    return latex_str, acc_dict
+    
+    
+

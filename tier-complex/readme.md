@@ -8,6 +8,11 @@ nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learn
 
 
 
+
+
+
+nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/llama7b-pruned-1blocks --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 -e 8  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-lore-1block.log 2>&1 &
+
 RedIntervention +++++++
 
 nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/llama7b-pruned --greedy_decoding --max_n_train_example 100 -type RedIntervention --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-red.log 2>&1 &

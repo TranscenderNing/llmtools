@@ -14,7 +14,7 @@ output_dir = "/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-explanati
 raw_dataset = load_raw_data(data_path)
 
 llm_exp = LlmExplanation(model_name, device_map=device_map, load_reft_model=False)
-llm_exp.vis_heatmap(raw_dataset, layer_left=1, layer_right=9, output_dir=f"{output_dir}-1-9-next")
-llm_exp.vis_heatmap(raw_dataset, layer_left=9, layer_right=17, output_dir=f"{output_dir}-9-17-next")
-llm_exp.vis_heatmap(raw_dataset, layer_left=17, layer_right=25, output_dir=f"{output_dir}-17-25-next")
-llm_exp.vis_heatmap(raw_dataset, layer_left=25, layer_right=33, output_dir=f"{output_dir}-25-33-next")
+llm_exp.vis_heatmap(raw_dataset, layer_left=1, layer_right=9, output_dir=f"{output_dir}-1-9-next1.pdf")
+llm_exp.vis_heatmap(raw_dataset, layer_left=9, layer_right=17, output_dir=f"{output_dir}-9-17-next1.pdf")
+llm_exp.vis_heatmap(raw_dataset, layer_left=17, layer_right=25, output_dir=f"{output_dir}-17-25-next1.pdf")
+llm_exp.vis_heatmap(raw_dataset, layer_left=25, layer_right=33, output_dir=f"{output_dir}-25-33-next1.pdf")

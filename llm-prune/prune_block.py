@@ -45,6 +45,8 @@ def main():
     os.makedirs(args.output_dir, exist_ok=True)
     
     list_pruned_blocks = args.list_pruned_blocks.split(";")
+    list_pruned_blocks = [int(b) for b in list_pruned_blocks]
+    print("list_pruned_blocks", list_pruned_blocks)
     num_pruned_blocks = len(list_pruned_blocks)
     
     args.dtype = dtype_mapping[args.dtype]
