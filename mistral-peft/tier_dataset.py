@@ -21,7 +21,9 @@ class NormalPeftNLGDataset(Dataset):
         dataset=None,
         seed=42,
         max_n_example=None,
-        task_config=None
+        task_config=None,
+        method="",
+        model_name="",
     ):
         super(NormalPeftNLGDataset, self).__init__()
 
@@ -45,7 +47,7 @@ class NormalPeftNLGDataset(Dataset):
         #     self.result.append(tokenized)
         
         self.result = []
-        self.cache_path = os.path.join(data_path, f"max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
+        self.cache_path = os.path.join(data_path, f"model_name.{model_name}.method.{method}.max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
         print(self.cache_path)
         # 如果缓存文件存在，则加载缓存数据
         if os.path.exists(self.cache_path):
@@ -65,6 +67,7 @@ class NormalPeftNLGDataset(Dataset):
 
 
     def load_dataset(self):
+        print(self.data_path)
         task_dataset = load_dataset("json", data_files=self.data_path, split="train")
         # select n random examples if specificed
         if self.max_n_example is not None:

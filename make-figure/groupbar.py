@@ -74,11 +74,11 @@ ax.set_ylabel("Accuracy")
 ax.set_xticks(x + width -0.1, species)
 ax.legend(loc="best",)
 
-ax.set_ylim(0, 1.0)
+ax.set_ylim(0.4, 1.0)
 
 plt.show()
-plt.savefig("visual_figs/groupbar.png")
-plt.savefig("visual_figs/groupbar.pdf")
+plt.savefig("visual_figs/groupbar_1.png")
+plt.savefig("visual_figs/groupbar_1.pdf")
 
 
 

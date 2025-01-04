@@ -161,6 +161,7 @@ tier_results/
 tier_simple_results/
 pruned_model_checkpoints/
 visual_figs/
+train-outputs/
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

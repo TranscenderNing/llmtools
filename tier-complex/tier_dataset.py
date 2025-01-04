@@ -23,7 +23,8 @@ class TierNLGDataset(Dataset):
         max_n_example=None,
         position="f7+l7",
         num_interventions=None,
-        task_config=None
+        task_config=None,
+        model_name=""
     ):
         super(TierNLGDataset, self).__init__()
 
@@ -49,7 +50,7 @@ class TierNLGDataset(Dataset):
         #     self.result.append(tokenized)
         
         self.result = []
-        self.cache_path = os.path.join(data_path, f"position.{position}.interventions.{self.num_interventions}.max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
+        self.cache_path = os.path.join(data_path, f"model_name.{model_name}.position.{position}.interventions.{self.num_interventions}.max_n_example.{self.max_n_example}.split.{self.data_split}.cache")
         print(self.cache_path)
         # 如果缓存文件存在，则加载缓存数据
         if os.path.exists(self.cache_path):

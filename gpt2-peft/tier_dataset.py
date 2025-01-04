@@ -160,14 +160,14 @@ class TierNLGDataset(Dataset):
             (
                 torch.tensor(
                     [
-                        self.tokenizer.pad_token_id,
+                        0,
                     ]
                 ),
                 result["input_ids"],
             )
         )
         result["attention_mask"] = (
-            result["input_ids"] != self.tokenizer.pad_token_id
+            result["input_ids"] != 0
         ).int()
         if "labels" in result:
             result["labels"] = torch.cat(

@@ -1,22 +1,19 @@
-import json
 import argparse
 import importlib
+import json
 import logging
 import os
 import random
-from dataclasses import dataclass
-from typing import Dict, Sequence
+import re
 
 import numpy as np
 import torch
 from datasets import Dataset
-import re
+from peft import LoraConfig, get_peft_model
 from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from transformers import (AutoModelForCausalLM, AutoTokenizer,
-                          DataCollatorForSeq2Seq)
-from peft import get_peft_model, LoraConfig
+from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForSeq2Seq
 
 # constants
 IGNORE_INDEX = -100
@@ -269,6 +266,7 @@ def get_args():
         default="/home/ldn/baidu/pyreft/paddle-version/loreft/datasets",
     )
     parser.add_argument("-peft_method", "--peft_method", type=str, default="")
+    parser.add_argument("-model_name", "--model_name", type=str, help="llama", default="llama-7b")
     parser.add_argument("-train_dataset", "--train_dataset", type=str, default=None)
     parser.add_argument("-eval_dataset", "--eval_dataset", type=str, default=None)
     parser.add_argument(
@@ -305,7 +303,7 @@ def get_args():
         type=int,
         default=2,
     )
-    parser.add_argument("-batch_size", "--batch_size", type=int, default=8)
+    parser.add_argument("-batch_size", "--batch_size", type=int, default=4)
     parser.add_argument("-eval_batch_size", "--eval_batch_size", type=int, default=8)
     parser.add_argument(
         "-output_dir", "--output_dir", type=str, default="./tier_results"
@@ -481,6 +479,18 @@ def load_peft_model(model, peft_method):
                 bias="none",
                 task_type="CAUSAL_LM",
                 use_dora=True
+            )
+        peft_model = get_peft_model(model, config)
+    elif peft_method == "rslora":
+        print("use rslora method")
+        config = LoraConfig(
+                r=8,
+                lora_alpha=16,
+                target_modules=["q_proj","v_proj"],
+                lora_dropout=0.00,
+                bias="none",
+                task_type="CAUSAL_LM",
+                use_rslora=True
             )
         peft_model = get_peft_model(model, config)
         

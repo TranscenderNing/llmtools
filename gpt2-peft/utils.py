@@ -430,31 +430,17 @@ def load_gpt_tokenizer(model_path, max_length=512):
     tokenizer = GPT2Tokenizer.from_pretrained(model_path,
                             model_max_length=max_length,
                             padding_side="right",)
-    tokenizer.pad_token = tokenizer.eos_token
-    print(f"tokenizer is : {tokenizer}")
+    # tokenizer.pad_token = tokenizer.eos_token
+    print("tokenizer: {tokenizer}")
+    # tokenizer.pad_token = 0
+    # print("tokenizer.pad_token_id is", tokenizer.pad_token_id)
+    # exit(0)
     need_resize = False
     return tokenizer, need_resize
 
 
 
 
-def load_tokenizer(model_path, max_length=512):
-    # load tokenizer
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_path,
-        model_max_length=max_length,
-        padding_side="right",
-        use_fast=False,
-    )
-    if tokenizer.unk_token == None and tokenizer.pad_token == None:
-        # raw llama3
-        print("adding a special padding token...")
-        tokenizer.add_special_tokens({"pad_token": "[PAD]"})
-        need_resize = True
-    else:
-        tokenizer.pad_token = tokenizer.unk_token
-        need_resize = False
-    return tokenizer, need_resize
 
 
 def load_base_model(model_path, dtype, device, tokenizer_len, need_resize=False):
@@ -768,15 +754,12 @@ def compute_metrics(
             # [layers, batch_size, positions]
             intervention_locations = inputs["intervention_locations"].permute(1, 0, 2)
             # get left padding count, [batch_size], and add to locations
-            # left_padding = (inputs["input_ids"] == tokenizer.bos_token_id).nonzero(
-            #     as_tuple=True
-            # )[1]
-            # left_padding = (inputs["input_ids"] != tokenizer.bos_token_id).nonzero(
-            #     as_tuple=True
-            # )[1] - 1
-            indices = first_non_50256_index_in_rows(inputs["input_ids"])
-            left_padding = torch.tensor(indices).to(device)
-            left_padding = left_padding - 1
+            left_padding = (inputs["input_ids"] == tokenizer.bos_token_id).nonzero(
+                as_tuple=True
+            )[1]
+            # indices = first_non_50256_index_in_rows(inputs["input_ids"])
+            # left_padding = torch.tensor(indices).to(device)
+            # left_padding = left_padding - 1
             print("inputs", inputs)
             print("left_padding", left_padding)
             if left_padding.numel() > 0:

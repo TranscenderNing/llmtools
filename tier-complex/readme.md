@@ -11,7 +11,13 @@ nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learn
 
 
 
-nohup python tier_train.py --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/llama7b-pruned-1blocks --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 -e 8  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-lore-1block.log 2>&1 &
+
+
+
+
+
+
+nohup python tier_train.py --model_name mistral --model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/llm-prune/pruned_model_checkpoints/Mistral-pruned-3blocks --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 -e 3  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/comon-prune-lore31block-mistral.log 2>&1 &
 
 RedIntervention +++++++
 

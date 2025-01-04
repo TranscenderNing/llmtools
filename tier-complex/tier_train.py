@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "6"
+os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import uuid
 import torch
 from transformers import (
@@ -36,6 +36,7 @@ def train(args):
     dtype = dtype_mapping[args.dtype]
     set_seed(args.seed)
 
+    model_name = args.model_name
     model_config = AutoConfig.from_pretrained(args.model_path)
     print(model_config)
     run_name = (
@@ -66,6 +67,7 @@ def train(args):
         num_interventions=len(layers),
         position=args.position,
         task_config=task_config,
+        model_name=args.model_name
     )
     trigger_tokens = train_dataset.trigger_tokens
 
@@ -196,6 +198,7 @@ def train(args):
             num_interventions=len(layers),
             position=args.position,
             task_config=task_config,
+            model_name=args.model_name
         )
         all_eval_datasets[eval_dataset][args.test_split] = [
             raw_eval,

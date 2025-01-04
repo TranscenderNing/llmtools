@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "7"
 import uuid
 import torch
 from transformers import (
@@ -56,6 +56,8 @@ def train(args):
         seed=args.seed,
         max_n_example=args.max_n_train_example,
         task_config=task_config,
+        method=args.peft_method,
+        model_name=args.model_name
     )
     trigger_tokens = train_dataset.trigger_tokens
 
@@ -149,6 +151,8 @@ def train(args):
             seed=args.seed,
             max_n_example=args.max_n_eval_example,
             task_config=task_config,
+            method=args.peft_method,
+            model_name=args.model_name
         )
         all_eval_datasets[eval_dataset][args.test_split] = [
             raw_eval,

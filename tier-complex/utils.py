@@ -293,6 +293,7 @@ def get_args():
         help="yahma/llama-7b-hf",
         default="/home/ldn/.cache/huggingface/hub/models--yahma--llama-7b-hf/snapshots/cf33055e5df9cc533abd7ea4707bf727ca2ada75",
     )
+    parser.add_argument("-model_name", "--model_name", type=str, help="llama", default="llama-7b")
     parser.add_argument("-seed", "--seed", type=int, help="42", default=42)
     parser.add_argument("-l", "--layers", type=str, help="2;10;18;26", default="all")
     parser.add_argument("-r", "--rank", type=int, help=8, default=8)
@@ -724,6 +725,7 @@ def compute_metrics(
 
     with torch.no_grad():
         for _, inputs in enumerate(eval_iterator):
+            del inputs["labels"]
             inputs = {k: v.to(device) for k, v in inputs.items()}
             # [layers, batch_size, positions]
             intervention_locations = inputs["intervention_locations"].permute(1, 0, 2)

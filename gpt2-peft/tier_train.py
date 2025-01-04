@@ -16,10 +16,8 @@ import json
 from utils import (
     get_args,
     dtype_mapping,
-    load_tokenizer,
     task_config,
     intervention_mapping,
-    load_base_model,
     TierDataCollator,
     compute_metrics,
 )
@@ -59,7 +57,7 @@ def train(args):
 
     train_dataset = TierNLGDataset(
         args.task,
-        "/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/gpt2/data/e2e/train.json",
+        "/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/gpt2-peft/data/e2e/train.json",
         tokenizer,
         data_split="train",
         seed=args.seed,
@@ -188,7 +186,7 @@ def train(args):
         all_eval_datasets[eval_dataset] = {}
         raw_eval = TierNLGDataset(
             args.task,
-            "/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/gpt2/data/e2e/test.json",
+            "/home/ldn/baidu/reft-pytorch-codes/learning/llmtools/gpt2-peft/data/e2e/test.json",
             tokenizer,
             data_split=args.test_split,
             seed=args.seed,
