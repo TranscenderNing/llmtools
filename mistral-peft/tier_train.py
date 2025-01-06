@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import uuid
 import torch
 from transformers import (
@@ -24,6 +24,7 @@ from utils import (
 )
 from tier_dataset import NormalPeftNLGDataset
 from tier_trainer import TierTrainer
+from loraplus import LoraPlusTrainingArguments, LoraPlusTrainer
 import logging
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -41,6 +42,8 @@ def train(args):
     print(f"args: {args}")
     print(f"model info: {model_config}")
     print(f"run_name: {run_name}")
+    
+  
 
     # load tokenizer
     tokenizer, need_resize = load_tokenizer(args.model_path, max_length=args.max_length)
@@ -68,8 +71,16 @@ def train(args):
         args.model_path, dtype, device, len(tokenizer), need_resize=need_resize
     )
     
-    peft_model = load_peft_model(model, peft_method=args.peft_method)
+    peft_model = load_peft_model(model=model, peft_method=args.peft_method)
     print(f"peft model:{peft_model}")
+    
+    
+    # if args.peft_method == "loraplus":
+    #     optimizer_cls = torch.optim.AdamW
+    #     optimizer_kwargs = {'lr': args.lr, 'eps': 1e-6, 'betas': (0.9, 0.999), 'weight_decay': 0.0}
+    #     loraplus_lr_ratio = 20.0
+    #     lora_plus_optim = create_loraplus_optimizer(model, optimizer_cls, optimizer_kwargs, loraplus_lr_ratio)
+              
 
     # disable origianl model gradients
     peft_model.print_trainable_parameters()
@@ -88,7 +99,7 @@ def train(args):
     data_collator = data_collator_fn
 
     # training args
-    training_args = TrainingArguments(
+    training_args = LoraPlusTrainingArguments(
         output_dir=f"{args.output_dir}/{run_name}",
         run_name=run_name,
         num_train_epochs=args.epochs,
@@ -104,10 +115,10 @@ def train(args):
         logging_strategy="steps",
         save_total_limit=1,  # for GLUE, it will save 2 at max.
         logging_steps=args.logging_steps,
-        lr_scheduler_type=args.schedule,
         learning_rate=args.lr,
         warmup_ratio=args.warmup_ratio,
-        optim="adamw_torch",
+        lr_scheduler_type=args.schedule,
+        # optim="adamw_torch" if args.peft_method != "loraplus" else lora_plus_optim,
         weight_decay=args.weight_decay,
         report_to="wandb" if args.is_wandb else "none",
         use_cpu=False if device == "cuda" else True,

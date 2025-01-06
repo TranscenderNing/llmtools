@@ -27,7 +27,7 @@ from transformers.utils import logging
 from transformers.pytorch_utils import ALL_LAYERNORM_LAYERS
 
 from transformers.trainer_pt_utils import get_parameter_names
-
+from loraplus import LoraPlusTrainer
 logger = logging.get_logger(__name__)
 
 
@@ -39,7 +39,7 @@ def make_dataloader(
         dataset, shuffle=shuffle, batch_size=batch_size, collate_fn=collate_fn
     )
 
-class TierTrainer(Trainer):
+class TierTrainer(LoraPlusTrainer):
 
     # 重写该方法，防止删除数据中新增的列
     def get_train_dataloader(self) -> DataLoader:

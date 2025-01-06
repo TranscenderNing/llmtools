@@ -39,6 +39,19 @@ nohup python tier_train.py -e 3 -lr 3e-4 -peft_method pissa --model_name llama -
 
 
 
+# mistral + adalora + 
+
+nohup python tier_train.py -e 1 -lr 3e-4 -peft_method adalora --model_path /home/ldn/models/Mistral-7B-v0.1 --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/mistral-peft/comon-mistral-adalora.log 2>&1 &
+
+
+
+
+# gemma + loraplus + 
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name gemma -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/gemma-7b --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /data/ldn/llmtools/mistral-peft/comon-gemma-loraplus.log 2>&1 &
+
+
+
+
 
 
 

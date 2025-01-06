@@ -14,6 +14,9 @@ from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, DataCollatorForSeq2Seq
+from peft import AdaLoraModel, AdaLoraConfig
+
+
 
 # constants
 IGNORE_INDEX = -100
@@ -446,8 +449,8 @@ def load_base_model(model_path, dtype, device, tokenizer_len, need_resize=False)
 
 
 def load_peft_model(model, peft_method):
-    if peft_method == "lora":
-        print("use lora method")
+    if peft_method == "lora" or peft_method == "loraplus":
+        print(f"use {peft_method} method")
         config = LoraConfig(
                 r=8,
                 lora_alpha=16,
@@ -491,6 +494,18 @@ def load_peft_model(model, peft_method):
                 bias="none",
                 task_type="CAUSAL_LM",
                 use_rslora=True
+            )
+        peft_model = get_peft_model(model, config)
+    elif peft_method == "adalora":
+        print("use adalora method")
+        config = AdaLoraConfig(
+                r=8,
+                lora_alpha=8,
+                target_modules=["q_proj","v_proj"],
+                lora_dropout=0.00,
+                bias="none",
+                task_type="CAUSAL_LM",
+
             )
         peft_model = get_peft_model(model, config)
         
