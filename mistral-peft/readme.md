@@ -47,11 +47,26 @@ nohup python tier_train.py -e 1 -lr 3e-4 -peft_method adalora --model_path /home
 
 
 # gemma + loraplus + 
-nohup python tier_train.py --data_dir /data/ldn/datasets --model_name gemma -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/gemma-7b --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /data/ldn/llmtools/mistral-peft/comon-gemma-loraplus.log 2>&1 &
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name gemma -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/gemma-7b --greedy_decoding --max_n_train_example 10 --max_n_eval_example 2  > /data/ldn/llmtools/mistral-peft/comon-gemma-loraplus.log 2>&1 &
+
+
+
+# mistral + loraplus + 
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name mistral -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/Mistral-7B-v0.1 --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /data/ldn/llmtools/mistral-peft/comon-mistral-loraplus.log 2>&1 &
+
+
+# llama + loraplus + 
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name llama -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/llama-7b --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /data/ldn/llmtools/mistral-peft/comon-llama-loraplus-params.log 2>&1 &
 
 
 
 
+
+
+
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name mistral -e 1 -lr 3e-4 -peft_method dora --model_path /data/ldn/llm-models/Mistral-7B-v0.1 --greedy_decoding --max_n_train_example 10 --max_n_eval_example 2 > /data/ldn/llmtools/mistral-peft/comon-mistral-params.log 2>&1 &
+
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name gemma -e 1 -lr 3e-4 -peft_method dora --model_path /data/ldn/llm-models/gemma-7b --greedy_decoding --max_n_train_example 10 --max_n_eval_example 2  > /data/ldn/llmtools/mistral-peft/comon-gemma-params-dora.log 2>&1 &
 
 
 
@@ -63,3 +78,12 @@ nohup python tier_predict.py --greedy_decoding --max_n_eval_example 20 --tier_mo
 
 
 
+
+
+cuda:4
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name gemma -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/gemma-7b --greedy_decoding  > /data/ldn/llmtools/mistral-peft/comon-gemma-loraplus-e1.log 2>&1 &
+
+
+
+cuda:5
+nohup python tier_train.py --data_dir /data/ldn/datasets --model_name mistral -e 1 -lr 3e-4 -peft_method loraplus --model_path /data/ldn/llm-models/Mistral-7B-v0.1 --greedy_decoding > /data/ldn/llmtools/mistral-peft/comon-mistral-loraplus-e1.log 2>&1 & 

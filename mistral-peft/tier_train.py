@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "5"
 import uuid
 import torch
 from transformers import (
@@ -84,6 +84,7 @@ def train(args):
 
     # disable origianl model gradients
     peft_model.print_trainable_parameters()
+    # exit(0)
 
 
     # train related
