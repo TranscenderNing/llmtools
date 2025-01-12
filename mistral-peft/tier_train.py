@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "7"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 import uuid
 import torch
 from transformers import (
@@ -9,6 +9,7 @@ from transformers import (
     DataCollatorWithPadding,
     set_seed,
     TrainingArguments,
+    TrainerCallback,
 )
 
 import json
@@ -27,6 +28,19 @@ from tier_trainer import TierTrainer
 import logging
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
+
+
+
+
+
+class MemoryCallback(TrainerCallback):
+    def on_step_end(self, args, state, control, **kwargs):
+        if torch.cuda.is_available():
+            allocated = torch.cuda.memory_allocated() / 1024 ** 2
+            cached = torch.cuda.memory_reserved() / 1024 ** 2
+            print(f"Step {state.global_step}: Allocated {allocated:.2f} MB, Cached {cached:.2f} MB")
+
+memory_callback = MemoryCallback()
 
 
 def train(args):
@@ -123,8 +137,12 @@ def train(args):
         eval_dataset=None,
         data_collator=data_collator,
         compute_metrics=None,
+        callbacks=[memory_callback]
     )
     trainer.train()
+    
+    print("训练结束")
+    exit(0)
 
     # saving final model and hyperparameters
     print("Saving final model")

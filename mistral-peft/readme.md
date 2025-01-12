@@ -38,6 +38,25 @@ cd /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/mistral-peft
 nohup python tier_train.py -e 3 -lr 3e-4 -peft_method pissa --model_name llama --model_path /home/ldn/models/llama-7b --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20  > /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/mistral-peft/comon-llama-pissa.log 2>&1 &
 
 
+# 记录显存
+# llama7b, batch_size = 2, no gradient accumulation
+# lora 
+nohup python tier_train.py -e 1 -lr 3e-4 -peft_method lora --model_name llama --model_path /data/ldn/llm-models/gemma-7b --data_dir /data/ldn/datasets --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 --gradient_accumulation_steps 1 --batch_size 1 > /data/ldn/llmtools/mistral-peft/comon-llama-lora-mem.log 2>&1 &
+
+# dora
+
+nohup python tier_train.py -e 1 -lr 3e-4 -peft_method dora --model_name gemma --model_path /data/ldn/llm-models/gemma-7b --data_dir /data/ldn/datasets --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 --gradient_accumulation_steps 1 --batch_size 1 > /data/ldn/llmtools/mistral-peft/comon-gemma-dora-mem.log 2>&1 &
+
+# tier
+nohup python tier_train.py -e 1 -lr 3e-4 -peft_method lora --model_name gamme --model_path /data/ldn/llm-models/pruned_model_checkpoints/gemma-pruned-3blocks --data_dir /data/ldn/datasets --greedy_decoding --max_n_train_example 100 --max_n_eval_example 20 --gradient_accumulation_steps 1 --batch_size 1 > /data/ldn/llmtools/mistral-peft/comon-gemma-tier-mem.log 2>&1 &
+
+
+
+
+
+
+
+
 
 
 
