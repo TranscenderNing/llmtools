@@ -114,7 +114,7 @@ class TierModel(nn.Module):
             all_set_handlers.extend(set_handlers)
         return all_set_handlers
 
-    def _intervention_setter(
+    def _intervention_setter_original(
         self,
         key,
         unit_locations_base,
@@ -170,6 +170,45 @@ class TierModel(nn.Module):
         )
 
         return HandlerList(handlers)
+
+
+    def _intervention_setter(
+        self,
+        key,
+        unit_locations_base,
+    ) -> HandlerList:
+        """
+        Create a list of setter handlers that will set activations
+        """
+        handlers = []
+        intervention, module_hook = self.interventions[key]
+
+        def hook_callback(
+            model,
+            inputs,
+            outputs,
+        ):
+            is_prompt = self._key_setter_call_counter[key] == 0
+            if is_prompt:
+                self._key_setter_call_counter[key] += 1
+            if not is_prompt:
+                return
+
+            outputs = do_intervention(
+                outputs,
+                intervention,
+            )
+
+        handlers.append(
+            module_hook(
+                hook_callback,
+            )
+        )
+
+        return HandlerList(handlers)
+
+
+
 
     def _gather_intervention_output(
         self, output, representations_key, unit_locations

@@ -10,7 +10,7 @@ from typing import Dict, Sequence
 import numpy as np
 import torch
 from datasets import Dataset
-from tier_interventions import (DualSpacesIntervention,
+from tier_interventions import (DualSpacesIntervention, GateLowRankEditor,
                                 FeedForwardIntervention, LoRAIntervention,
                                 LoreftIntervention, LoreftIntervention_v2,
                                 MloraIntervention, MoEIntervention,
@@ -77,6 +77,7 @@ dtype_mapping = {
 
 intervention_mapping = {
     "LoreftIntervention": LoreftIntervention,
+    "GateLowRankEditor": GateLowRankEditor,
     "LoRAIntervention": LoRAIntervention,
     "MoEIntervention": MoEIntervention,
     "FeedForwardIntervention": FeedForwardIntervention,
@@ -299,6 +300,7 @@ def get_args():
     parser.add_argument("-r", "--rank", type=int, help=8, default=8)
     parser.add_argument("-p", "--position", type=str, help="f1+l1", default="f7+l7")
     parser.add_argument("-e", "--epochs", type=int, help="1", default=6)
+    parser.add_argument("-m", "--m", type=int, help="the selected token number ", default=10)
     parser.add_argument("-is_wandb", "--is_wandb", action="store_true")
     parser.add_argument("-wandb_name", "--wandb_name", type=str, default="reft")
     parser.add_argument("-save_model", "--save_model", action="store_true")
@@ -440,7 +442,11 @@ def load_tokenizer(model_path, max_length=512):
         padding_side="right",
         use_fast=False,
     )
-    if tokenizer.unk_token == None and tokenizer.pad_token == None:
+    print("unk_token", tokenizer.unk_token)
+    print("pad_token", tokenizer.pad_token)
+    if tokenizer.pad_token != None:
+        need_resize = False
+    elif tokenizer.unk_token == None and tokenizer.pad_token == None:
         # raw llama3
         print("adding a special padding token...")
         tokenizer.add_special_tokens({"pad_token": "[PAD]"})
@@ -681,7 +687,7 @@ def make_dataloader(
     )
 
 
-def compute_metrics(
+def compute_metrics_original(
     task: str,
     dataset_name: str,
     intervenable,
@@ -829,6 +835,136 @@ def compute_metrics(
 
 
 
+def compute_metrics(
+    task: str,
+    dataset_name: str,
+    intervenable,
+    tokenizer: AutoTokenizer,
+    eval_dataset: Dataset,
+    data_items: list,
+    trigger_tokens: str,
+    batch_size: int = 4,
+    data_collator=None,
+    greedy_decoding=False,
+    temperature=None,
+    top_p=None,
+    top_k=None,
+    device=None,
+):
+    # switch the tokenizer mode first for generation tasks
+    if task != "glue":
+        tokenizer.padding_side = "left"  # switch padding side for collator
+        num_beams = (
+            4
+            if task in ["commonsense", "math", "ARC-Challenge"] and not greedy_decoding
+            else 1
+        )
+
+    eval_dataloader = make_dataloader(
+        eval_dataset, batch_size, data_collator, shuffle=False
+    )
+    correct_count = 0
+    total_count = 0
+    generations = []
+    eval_iterator = tqdm(eval_dataloader, position=0, leave=True)
+
+    if (
+        "Meta-Llama-3-8B-Instruct" in tokenizer.name_or_path
+    ):  # pretty bad workaround for llama-3, forgive me
+        terminators = [
+            tokenizer.eos_token_id,
+            tokenizer.convert_tokens_to_ids("<|eot_id|>"),
+        ]
+        trigger_tokens = "assistant\n\n"
+
+    with torch.no_grad():
+        for _, inputs in enumerate(eval_iterator):
+            del inputs["labels"]
+            inputs = {k: v.to(device) for k, v in inputs.items()}
+            # [layers, batch_size, positions]
+            intervention_locations = inputs["intervention_locations"].permute(1, 0, 2)
+            # set generation args depending on task
+            generation_args = {
+                "base": {
+                    "input_ids": inputs["input_ids"],
+                    "attention_mask": inputs["attention_mask"],
+                },
+                "unit_locations": intervention_locations,
+                "intervene_on_prompt": True,
+                "eos_token_id": tokenizer.eos_token_id,
+                "early_stopping": True,
+            }
+            if "generation_args" in task_config[task]:
+                generation_args.update(
+                    task_config[task]["generation_args"][greedy_decoding]
+                )
+            if (
+                "Meta-Llama-3-8B-Instruct" in tokenizer.name_or_path
+            ):  # pretty bad workaround for llama-3, forgive me
+                generation_args["eos_token_id"] = terminators
+
+            # override generation args if necessary
+            if temperature is not None:
+                generation_args["temperature"] = temperature
+            if top_p is not None:
+                generation_args["top_p"] = top_p
+            if top_k is not None:
+                generation_args["top_k"] = top_k
+
+            # generate with intervention on prompt
+            _, steered_response = intervenable.generate(**generation_args)
+
+            # detokenize in batch
+            actual_preds = tokenizer.batch_decode(
+                steered_response, skip_special_tokens=True
+            )
+
+            for id, pred in zip(inputs["id"].tolist(), actual_preds):
+                example = data_items[id]
+                try:
+                    raw_generation = extract_output(pred, trigger_tokens)
+                except:
+                    print("get not split based on trigger tokens: ", raw_generation)
+                    raw_generation = "WRONG"
+
+                # check if generation is correct
+                if task == "commonsense" or task == "ARC-Challenge":
+                    answer = example["answer"]
+                    generation = raw_generation[:]
+                    if generation.strip() == answer.strip():
+                        correct_count += 1
+                elif task == "math":
+                    answer = example["answer"]
+                    answer = answer.strip()
+                    if not is_float(answer):  # assuming this is from AQuA:
+                        generation = extract_answer_letter(raw_generation)
+                        if generation.strip() == answer.strip():
+                            correct_count += 1
+                    else:
+                        generation = extract_answer_number(raw_generation)
+                        if abs(float(answer) - generation) <= 0.001:
+                            correct_count += 1
+
+                # log
+                total_count += 1
+                metric_str = round(correct_count / total_count, 3)
+                eval_iterator.set_postfix({"em": metric_str})
+                instruction = (
+                    example["question"] if task == "gsm8k" else example["instruction"]
+                )
+                generations += [
+                    {
+                        "instruction": instruction,
+                        "raw_generation": raw_generation,
+                        "generation": generation,
+                        "answer": answer,
+                    }
+                ]
+    return generations, {f"eval/{dataset_name}": correct_count / total_count}
+
+
+
+
 def parse_json_result(file_path = "./tier_results/-home-ldn-baidu-reft-pytorch-codes-learning-llmtools-llm-prune-pruned_model_checkpoints-llama7b-pruned-3blocks.commonsense.b1bfa2e4-bf92-11ef-9456-7cc2554dc4ec/eval_results.json"):
     with open(file_path, "r") as f:
         acc_dict = json.load(f)
@@ -842,4 +978,223 @@ def parse_json_result(file_path = "./tier_results/-home-ldn-baidu-reft-pytorch-c
     return latex_str, acc_dict
     
     
+
+
+def test_qwen2_5():
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    model_name = "Qwen/Qwen2.5-7B-Instruct"
+
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+    prompt = "Give me a short introduction to large language model."
+    messages = [
+        {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
+        {"role": "user", "content": prompt}
+    ]
+    text = tokenizer.apply_chat_template(
+        messages,
+        tokenize=False,
+        add_generation_prompt=True
+    )
+    print("text", text)
+    
+    model_inputs = tokenizer([text],)
+    print("model_inputs", model_inputs)
+    
+
+
+
+def test_gate():
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+
+    class GumbelTopK(torch.autograd.Function):
+        @staticmethod
+        def forward(ctx, scores, m, temperature=1.0):
+            # 添加Gumbel噪声
+            gumbel = -torch.log(-torch.log(torch.rand_like(scores)))
+            noisy_scores = scores + gumbel
+            
+            # 获取topk索引
+            _, indices = torch.topk(noisy_scores, m, dim=1)
+            
+            # 创建one-hot mask
+            mask = torch.zeros_like(scores)
+            mask.scatter_(1, indices, 1.0)
+            
+            # 保存中间结果用于反向传播
+            ctx.save_for_backward(scores, indices)
+            ctx.m = m
+            ctx.temperature = temperature
+            
+            return mask, indices
+
+        @staticmethod
+        def backward(ctx, grad_output_mask, grad_output_indices):
+            # 由于mask不参与实际梯度计算，只处理scores的梯度
+            scores, indices = ctx.saved_tensors
+            m = ctx.m
+            temperature = ctx.temperature
+            bs = scores.size(0)
+            
+            # 计算被选位置的softmax概率
+            selected_scores = torch.gather(scores, 1, indices)
+            probs = F.softmax(selected_scores / temperature, dim=1)
+            
+            # 将概率扩展回原始shape
+            probs_expanded = torch.zeros_like(scores)
+            probs_expanded.scatter_(1, indices, probs)
+            
+            return probs_expanded, None, None
+
+    class GateLowRankEditor(nn.Module):
+        def __init__(self, hidden_size, m, rank, temperature=1.0):
+            super().__init__()
+            self.hidden_size = hidden_size
+            self.m = m
+            self.rank = rank
+            self.temperature = temperature
+
+            # Gate网络
+            self.gate = nn.Sequential(
+                nn.Linear(hidden_size, 1),
+                nn.Sigmoid()  # 输出0-1之间的分数
+            )
+            
+            # 低秩编辑网络
+            self.edit_network = nn.Sequential(
+                nn.Linear(hidden_size, rank, bias=False),
+                nn.ReLU(),
+                nn.Linear(rank, hidden_size, bias=False)
+            )
+
+        def forward(self, x):
+            bs, seq_len, _ = x.shape
+            
+            # 计算每个位置的分数 [bs, seq_len]
+            scores = self.gate(x).squeeze(-1)
+            
+            # 获取mask和索引
+            if self.training:
+                mask, indices = GumbelTopK.apply(scores, self.m, self.temperature)
+            else:
+                # 推理时直接使用topk
+                _, indices = torch.topk(scores, self.m, dim=1)
+                mask = torch.zeros_like(scores)
+                mask.scatter_(1, indices, 1.0)
+            
+            # 收集选中的特征
+            selected_features = torch.gather(x, 1, 
+                indices.unsqueeze(-1).expand(-1, -1, self.hidden_size))
+            
+            # 应用低秩编辑
+            edited_features = self.edit_network(selected_features)
+            
+            # 创建输出张量
+            output = x.clone()
+            
+            # 将编辑后的特征写回原位置
+            output.scatter_(
+                dim=1,
+                index=indices.unsqueeze(-1).expand(-1, -1, self.hidden_size),
+                src=edited_features
+            )
+            
+            return output
+
+    # 测试示例
+    bs, seq_len, hidden_size = 2, 10, 128
+    m = 3
+    rank = 16
+    
+    model = GateLowRankEditor(hidden_size, m, rank)
+    x = torch.randn(bs, seq_len, hidden_size)
+    
+    # 前向传播
+    output = model(x)
+    
+    print(f"输入形状: {x.shape}")
+    print(f"输出形状: {output.shape}")
+    print(f"输出与输入形状一致: {output.shape == x.shape}")
+
+
+
+def test_gate_1():
+    import torch
+    import torch.nn as nn
+    import torch.nn.functional as F
+
+    class GateLowRankEditor(nn.Module):
+        def __init__(self, hidden_size, m, rank, temperature=1.0):
+            super().__init__()
+            self.hidden_size = hidden_size
+            self.m = m
+            self.rank = rank
+            self.temperature = temperature
+
+            # Gate网络
+            self.gate = nn.Sequential(
+                nn.Linear(hidden_size, 1),
+                nn.Sigmoid()  # 输出0-1之间的分数
+            )
+            
+            # 低秩编辑网络
+            self.edit_network = nn.Sequential(
+                nn.Linear(hidden_size, rank, bias=False),
+                nn.ReLU(),
+                nn.Linear(rank, hidden_size, bias=False)
+            )
+
+        def forward(self, x):
+            
+            # 计算每个位置的分数 [bs, seq_len]
+            scores = self.gate(x).squeeze(-1)
+            
+            # 推理时直接使用topk
+            _, indices = torch.topk(scores, self.m, dim=1)
+            
+            # 收集选中的特征
+            selected_features = torch.gather(x, 1, 
+                indices.unsqueeze(-1).expand(-1, -1, self.hidden_size))
+            
+            # 应用低秩编辑
+            edited_features = self.edit_network(selected_features)
+            
+            # 创建输出张量
+            output = x.clone()
+            
+            # 将编辑后的特征写回原位置
+            output.scatter_(
+                dim=1,
+                index=indices.unsqueeze(-1).expand(-1, -1, self.hidden_size),
+                src=edited_features
+            )
+            
+            return output
+
+    # 测试示例
+    bs, seq_len, hidden_size = 2, 10, 128
+    m = 3
+    rank = 16
+    
+    model = GateLowRankEditor(hidden_size, m, rank)
+    x = torch.randn(bs, seq_len, hidden_size)
+    
+    # 前向传播
+    output = model(x)
+    
+    print(f"输入形状: {x.shape}")
+    print(f"输出形状: {output.shape}")
+    print(f"输出与输入形状一致: {output.shape == x.shape}")
+
+
+
+if __name__ == "__main__":
+    test_gate_1()
+    
+
+
 

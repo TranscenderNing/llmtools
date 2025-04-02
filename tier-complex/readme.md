@@ -1,3 +1,25 @@
+for qwen2.5 model
+
+# /data/ldn/llm-models/Qwen2.5-7B-Instruct
+
+
+## train
+```
+CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
+  --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+  --data_dir /data/ldn/datasets \
+  --greedy_decoding \
+  --max_n_train_example 100 \
+  --max_n_eval_example 20 \
+  --intervention_type GateLowRankEditor \
+  --m 10 \
+  -e 1 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit.log 2>&1 &
+
+```
+
+
+
 
 ## train
 python tier_train.py
@@ -41,6 +63,12 @@ nohup python tier_train.py -task commonsense \
 
 ## predict
 nohup python tier_predict.py --greedy_decoding --max_n_eval_example 20 --tier_model_path /home/ldn/baidu/reft-pytorch-codes/learning/llmtools/tier-complex/tier_results/-home-ldn-.cache-huggingface-hub-models--yahma--llama-7b-hf-snapshots-cf33055e5df9cc533abd7ea4707bf727ca2ada75.commonsense.b5fb7bd8-bcec-11ef-a997-7cc2554dc4ec > pred.log 2>&1 &
+
+
+
+
+
+
 
 
 

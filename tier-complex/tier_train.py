@@ -1,6 +1,6 @@
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "4"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "4"
 import uuid
 import torch
 from transformers import (
@@ -78,16 +78,39 @@ def train(args):
         args.model_path, dtype, device, len(tokenizer), need_resize=need_resize
     )
 
-    intervention_type = intervention_mapping[args.intervention_type]
+
+    # loreft intervention 
+    # intervention_type = intervention_mapping[args.intervention_type]
+    # intervention_dtype = dtype
+    # intervention_params = {
+    #     "embed_dim": model_config.hidden_size,
+    #     "low_rank_dimension": args.rank,
+    #     "dropout": args.dropout,
+    #     "dtype": intervention_dtype,
+    #     "act_fn": args.act_fn,
+    #     "device": device,
+    #     "add_bias": args.add_bias,
+    # }
+    # representations = [
+    #     {
+    #         "layer": l,
+    #         "component": "block_output",
+    #         "low_rank_dimension": args.rank,
+    #         "intervention": intervention_mapping[args.intervention_type](
+    #             **intervention_params
+    #         ),
+    #     }
+    #     for l in layers
+    # ]
+    
     intervention_dtype = dtype
+    # gate intervention
     intervention_params = {
         "embed_dim": model_config.hidden_size,
-        "low_rank_dimension": args.rank,
-        "dropout": args.dropout,
-        "dtype": intervention_dtype,
-        "act_fn": args.act_fn,
+        "rank": args.rank,
+        "m": args.m,
         "device": device,
-        "add_bias": args.add_bias,
+        "dtype": intervention_dtype,
     }
     representations = [
         {
@@ -100,6 +123,8 @@ def train(args):
         }
         for l in layers
     ]
+    
+    
     reft_config = TierConfig(
         representations=representations,
         intervention_params=intervention_params,
