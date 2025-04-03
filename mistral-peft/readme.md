@@ -2,6 +2,76 @@
 ## train
 
 
+## Qwen2.5-7B-Instruct train 
+## 模型 /data/ldn/llm-models/Qwen2.5-7B-Instruct
+
+
+
+```
+lora:
+CUDA_VISIBLE_DEVICES=2 nohup python tier_train.py \
+    -e 1 \
+    --rank 8 \
+    -lr 3e-4 \
+    -peft_method lora \
+    --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+    --model_name Qwen2.5-7B-Instruct \
+    --data_dir /data/ldn/datasets \
+    --greedy_decoding > logs/Qwen2.5-7B-Instruct-lora-common-new.log 2>&1 &
+
+
+
+dora: 
+CUDA_VISIBLE_DEVICES=3 nohup python tier_train.py \
+    -e 1 \
+    --rank 8 \
+    -lr 3e-4 \
+    -peft_method dora \
+    --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+    --model_name Qwen2.5-7B-Instruct \
+    --data_dir /data/ldn/datasets \
+    --greedy_decoding > logs/Qwen2.5-7B-Instruct-dora-common-new.log 2>&1 &
+
+
+
+
+pissa: 
+CUDA_VISIBLE_DEVICES=5 nohup python tier_train.py \
+    -e 1 \
+    --rank 8 \
+    -lr 3e-4 \
+    -peft_method pissa \
+    --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+    --model_name Qwen2.5-7B-Instruct \
+    --data_dir /data/ldn/datasets \
+    --greedy_decoding > logs/Qwen2.5-7B-Instruct-pissa-common-new.log 2>&1 &
+
+```
+
+
+
+## few sample test
+```
+CUDA_VISIBLE_DEVICES=5 nohup python tier_train.py \
+    -e 1 \
+    -lr 3e-4 \
+    -peft_method pissa \
+    --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+    --model_name Qwen2.5-7B-Instruct \
+    --data_dir /data/ldn/datasets \
+    --greedy_decoding \
+    --max_n_train_example 111 \
+    --max_n_eval_example 21 > logs/Qwen2.5-7B-Instruct-pissa-common.log 2>&1 &
+
+
+
+```
+
+
+
+
+
+
 peft_method
 
 

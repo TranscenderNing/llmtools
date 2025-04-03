@@ -3,7 +3,9 @@ for qwen2.5 model
 # /data/ldn/llm-models/Qwen2.5-7B-Instruct
 
 
-## train
+
+
+## few samples train
 ```
 CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
   --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
@@ -13,7 +15,21 @@ CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
   --max_n_eval_example 20 \
   --intervention_type GateLowRankEditor \
   --m 10 \
-  -e 1 \
+  -e 3 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit.log 2>&1 &
+```
+
+
+```
+
+CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
+  --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+  --data_dir /data/ldn/datasets \
+  --greedy_decoding \
+  --intervention_type GateLowRankEditor \
+  --rank 8 \
+  --m 10 \
+  -e 3 \
   > logs/tier-Qwen2.5-7B-Instruct-gate-edit.log 2>&1 &
 
 ```

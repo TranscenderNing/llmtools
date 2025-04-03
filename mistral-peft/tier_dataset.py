@@ -80,7 +80,23 @@ class NormalPeftNLGDataset(Dataset):
     def tokenize(self, data_item, id):
         result = {}
         # get base prompt(question)  and base input(question + answer)
-        if self.task == "commonsense" or self.task == "ARC-Challenge":
+        if True:
+            messages = [
+                {"role": "system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."},
+                {"role": "user", "content": data_item["instruction"]}
+            ]
+            base_prompt = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+            base_input = (
+                base_prompt
+                + self.trigger_tokens
+                + data_item["answer"]
+                + self.tokenizer.eos_token
+            )
+        elif self.task == "commonsense" or self.task == "ARC-Challenge":
             base_prompt = self.task_prompt_template % (data_item["instruction"])
             base_input = (
                 base_prompt

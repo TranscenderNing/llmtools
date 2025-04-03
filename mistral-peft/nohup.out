@@ -1,0 +1,31 @@
+Traceback (most recent call last):
+  File "/data/ldn/llmtools/mistral-peft/tier_train.py", line 26, in <module>
+    from tier_trainer import TierTrainer
+  File "/data/ldn/llmtools/mistral-peft/tier_trainer.py", line 2, in <module>
+    import pyvene as pv
+ModuleNotFoundError: No module named 'pyvene'
+usage: tier_train.py [-h] [-task TASK] [-data_dir DATA_DIR]
+                     [-peft_method PEFT_METHOD] [-model_name MODEL_NAME]
+                     [-train_dataset TRAIN_DATASET]
+                     [-eval_dataset EVAL_DATASET] [-model_path MODEL_PATH]
+                     [-seed SEED] [-l LAYERS] [-r RANK] [-p POSITION]
+                     [-e EPOCHS] [-is_wandb] [-wandb_name WANDB_NAME]
+                     [-save_model] [-max_n_train_example MAX_N_TRAIN_EXAMPLE]
+                     [-max_n_eval_example MAX_N_EVAL_EXAMPLE]
+                     [-type INTERVENTION_TYPE]
+                     [-gradient_accumulation_steps GRADIENT_ACCUMULATION_STEPS]
+                     [-batch_size BATCH_SIZE]
+                     [-eval_batch_size EVAL_BATCH_SIZE]
+                     [-output_dir OUTPUT_DIR] [-lr LR] [-schedule SCHEDULE]
+                     [-wu WARMUP_RATIO] [-wd WEIGHT_DECAY] [-dropout DROPOUT]
+                     [-act_fn ACT_FN] [-add_bias] [-test_split TEST_SPLIT]
+                     [-train_on_inputs] [-max_length MAX_LENGTH] [-nt]
+                     [-allow_cls_grad]
+                     [-metric_for_best_model METRIC_FOR_BEST_MODEL]
+                     [-dtype DTYPE] [-logging_steps LOGGING_STEPS]
+                     [-wandb_dir WANDB_DIR] [-wandb_proj WANDB_PROJ] [-sw]
+                     [-gd] [-t TEMPERATURE] [-top_p TOP_P] [-top_k TOP_K]
+                     [-disable_reft] [-use_lora] [-lora_rank LORA_RANK]
+                     [-lora_alpha LORA_ALPHA] [-lora_modules LORA_MODULES]
+                     [-lora_layers LORA_LAYERS]
+tier_train.py: error: unrecognized arguments:  

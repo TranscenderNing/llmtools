@@ -67,9 +67,6 @@ dtype_mapping = {
 }
 
 
-
-
-
 task_config = {
     "ARC-Challenge": {
         "train_datasets": ["ARC-Challenge"],
@@ -266,7 +263,9 @@ def get_args():
         default="/home/ldn/baidu/pyreft/paddle-version/loreft/datasets",
     )
     parser.add_argument("-peft_method", "--peft_method", type=str, default="")
-    parser.add_argument("-model_name", "--model_name", type=str, help="llama", default="llama-7b")
+    parser.add_argument(
+        "-model_name", "--model_name", type=str, help="llama", default="llama-7b"
+    )
     parser.add_argument("-train_dataset", "--train_dataset", type=str, default=None)
     parser.add_argument("-eval_dataset", "--eval_dataset", type=str, default=None)
     parser.add_argument(
@@ -422,7 +421,9 @@ def load_tokenizer(model_path, max_length=512):
         padding_side="right",
         use_fast=False,
     )
-    if tokenizer.unk_token == None and tokenizer.pad_token == None:
+    if tokenizer.pad_token != None:
+        need_resize = False
+    elif tokenizer.unk_token == None and tokenizer.pad_token == None:
         # raw llama3
         print("adding a special padding token...")
         tokenizer.add_special_tokens({"pad_token": "[PAD]"})
@@ -446,56 +447,70 @@ def load_base_model(model_path, dtype, device, tokenizer_len, need_resize=False)
 
 
 def load_peft_model(model, peft_method):
+    # target_modules = [
+    #     "q_proj",
+    #     "v_proj",
+    #     "k_proj",
+    #     "o_proj",
+    #     "gate_proj",
+    #     "up_proj",
+    #     "down_proj",
+    # ]
+    target_modules = [
+        "q_proj",
+        "v_proj",
+        "up_proj",
+        "down_proj",
+    ]
     if peft_method == "lora":
         print("use lora method")
         config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                target_modules=["q_proj","v_proj"],
-                lora_dropout=0.00,
-                bias="none",
-                task_type="CAUSAL_LM",
-            )
+            r=8,
+            lora_alpha=16,
+            target_modules=target_modules,
+            lora_dropout=0.00,
+            bias="none",
+            task_type="CAUSAL_LM",
+        )
         peft_model = get_peft_model(model, config)
     elif peft_method == "pissa":
         print("use pissa method")
         config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                target_modules=["q_proj","v_proj"],
-                lora_dropout=0.00,
-                bias="none",
-                task_type="CAUSAL_LM",
-                init_lora_weights="pissa"
-            )
+            r=8,
+            lora_alpha=16,
+            target_modules=target_modules,
+            lora_dropout=0.00,
+            bias="none",
+            task_type="CAUSAL_LM",
+            init_lora_weights="pissa",
+        )
         peft_model = get_peft_model(model, config)
     elif peft_method == "dora":
         print("use dora method")
         config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                target_modules=["q_proj","v_proj"],
-                lora_dropout=0.00,
-                bias="none",
-                task_type="CAUSAL_LM",
-                use_dora=True
-            )
+            r=8,
+            lora_alpha=16,
+            target_modules=target_modules,
+            lora_dropout=0.00,
+            bias="none",
+            task_type="CAUSAL_LM",
+            use_dora=True,
+        )
         peft_model = get_peft_model(model, config)
     elif peft_method == "rslora":
         print("use rslora method")
         config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                target_modules=["q_proj","v_proj"],
-                lora_dropout=0.00,
-                bias="none",
-                task_type="CAUSAL_LM",
-                use_rslora=True
-            )
+            r=8,
+            lora_alpha=16,
+            target_modules=target_modules,
+            lora_dropout=0.00,
+            bias="none",
+            task_type="CAUSAL_LM",
+            use_rslora=True,
+        )
         peft_model = get_peft_model(model, config)
-        
-    return peft_model
 
+    return peft_model
 
 
 def create_directory(path):
@@ -516,7 +531,6 @@ def set_seed(seed: int):
 def count_parameters(model):
     """Count parameters of a model that require gradients"""
     return int(sum(p.numel() for p in model.parameters() if p.requires_grad))
-
 
 
 def is_float(element: any) -> bool:
@@ -716,17 +730,16 @@ def compute_metrics(
     return generations, {f"eval/{dataset_name}": correct_count / total_count}
 
 
-def parse_json_result(file_path = "./tier_results/-home-ldn-baidu-reft-pytorch-codes-learning-llmtools-llm-prune-pruned_model_checkpoints-llama7b-pruned-3blocks.commonsense.b1bfa2e4-bf92-11ef-9456-7cc2554dc4ec/eval_results.json"):
+def parse_json_result(
+    file_path="./tier_results/-home-ldn-baidu-reft-pytorch-codes-learning-llmtools-llm-prune-pruned_model_checkpoints-llama7b-pruned-3blocks.commonsense.b1bfa2e4-bf92-11ef-9456-7cc2554dc4ec/eval_results.json",
+):
     with open(file_path, "r") as f:
         acc_dict = json.load(f)
     latex_str = []
     nums = list(acc_dict.values())
-    nums.append(sum(nums) / len(nums)) 
+    nums.append(sum(nums) / len(nums))
     nums = [num * 100 for num in nums]
     print(nums)
     nums_str = [f"{num:.1f}" for num in nums]
-    latex_str = ' & '.join(nums_str)
+    latex_str = " & ".join(nums_str)
     return latex_str, acc_dict
-    
-    
-

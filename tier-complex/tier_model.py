@@ -194,10 +194,23 @@ class TierModel(nn.Module):
             if not is_prompt:
                 return
 
-            outputs = do_intervention(
-                outputs,
+
+            
+            if isinstance(outputs, tuple):
+                select_output = outputs[0].clone()
+            else:
+                select_output = outputs.clone()
+
+            intervened_representation = do_intervention(
+                select_output,
                 intervention,
             )
+            
+            if isinstance(outputs, tuple):
+                outputs[0][:,:,:] = intervened_representation[:,:,:]
+                # outputs = (intervened_representation, *outputs[1:])
+            else:
+                outputs = intervened_representation
 
         handlers.append(
             module_hook(

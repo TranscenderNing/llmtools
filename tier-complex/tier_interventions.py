@@ -103,11 +103,32 @@ class GateLowRankEditor(nn.Module):
         ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
         
         # 低秩编辑网络
-        self.edit_network = nn.Sequential(
-            nn.Linear(self.hidden_size, self.rank, bias=False),
-            nn.ReLU(),
-            nn.Linear(self.rank, self.hidden_size, bias=False)
-        ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+        # self.edit_network = nn.Sequential(
+        #     nn.Linear(self.hidden_size, self.rank, bias=False),
+        #     nn.ReLU(),
+        #     nn.Linear(self.rank, self.hidden_size, bias=False)
+        # ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+
+        rotate_layer = LowRankRotateLayer(
+            kwargs["embed_dim"], kwargs["rank"], init_orth=True
+        ).to(kwargs["device"])
+        self.rotate_layer = torch.nn.utils.parametrizations.orthogonal(rotate_layer).to(
+            kwargs["device"]
+        )
+        self.learned_source = (
+            torch.nn.Linear(kwargs["embed_dim"], kwargs["rank"])
+            .to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+            .to(kwargs["device"])
+        )
+        self.dropout = torch.nn.Dropout(
+            kwargs["dropout"] if "dropout" in kwargs else 0.0
+        ).to(kwargs["device"])
+        self.act_fn = (
+            ACT2FN["linear"]
+            if "act_fn" not in kwargs or kwargs["act_fn"] is None
+            else ACT2FN[kwargs["act_fn"]]
+        )
+
 
     def forward(self, x):
         
@@ -122,7 +143,14 @@ class GateLowRankEditor(nn.Module):
             indices.unsqueeze(-1).expand(-1, -1, self.hidden_size))
         
         # 应用低秩编辑
-        edited_features = self.edit_network(selected_features)
+        # edited_features = self.edit_network(selected_features)
+        
+        rotated_base = self.rotate_layer(selected_features)
+        edited_features = selected_features + torch.matmul(
+            (self.act_fn(self.learned_source(selected_features)) - rotated_base),
+            self.rotate_layer.weight.T,
+        )
+        edited_features =  self.dropout(edited_features.to(x.dtype))
         
         # 创建输出张量
         output = x.clone()
