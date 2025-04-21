@@ -82,7 +82,10 @@ class TierNLGDataset(Dataset):
         return first_n, last_n
 
     def load_dataset(self):
-        task_dataset = load_dataset("json", data_files=self.data_path, split="train")
+        if self.task == "gsm8k":
+            task_dataset = load_dataset("openai/gsm8k", "main", split=self.data_split)
+        else:
+            task_dataset = load_dataset("json", data_files=self.data_path, split="train")
         # select n random examples if specificed
         if self.max_n_example is not None:
             task_dataset = task_dataset.shuffle(seed=self.seed)
@@ -122,6 +125,9 @@ class TierNLGDataset(Dataset):
         elif self.task == "math":
             base_prompt = self.task_prompt_template % (data_item["instruction"])
             base_input = base_prompt + data_item["output"] + self.tokenizer.eos_token
+        elif self.task == "gsm8k":
+            base_prompt = self.task_prompt_template % (data_item["question"])
+            base_input = base_prompt + data_item["answer"] + self.tokenizer.eos_token
         else:
             raise ValueError(f"Unrecognized task: {self.task}")
 

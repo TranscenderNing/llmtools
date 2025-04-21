@@ -15,3 +15,189 @@ Traceback (most recent call last):
   File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 2287, in define_import_structure
     import_structure = create_import_structure_from_path(module_path)
 KeyboardInterrupt
+Using the latest cached version of the dataset since openai/gsm8k couldn't be found on the Hugging Face Hub
+Found the latest cached dataset configuration 'main' at /home/ldn/.cache/huggingface/datasets/openai___gsm8k/main/0.0.0/e53f048856ff4f594e959d75785d2c2d37b678ee (last modified on Fri Apr 11 09:09:08 2025).
+Qwen2Config {
+  "_name_or_path": "/data/ldn/llm-models/pruned_model_checkpoints/Qwen2.5-7B-Instruct-pruned-block-0",
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 3584,
+  "initializer_range": 0.02,
+  "intermediate_size": 18944,
+  "max_position_embeddings": 32768,
+  "max_window_layers": 28,
+  "model_type": "qwen2",
+  "num_attention_heads": 28,
+  "num_hidden_layers": 27,
+  "num_key_value_heads": 4,
+  "rms_norm_eps": 1e-06,
+  "rope_scaling": null,
+  "rope_theta": 1000000.0,
+  "sliding_window": 131072,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.49.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 152064
+}
+
+args: Namespace(task='gsm8k', data_dir='/data/ldn/datasets', train_dataset=None, eval_dataset=None, model_path='/data/ldn/llm-models/pruned_model_checkpoints/Qwen2.5-7B-Instruct-pruned-block-0', model_name='llama-7b', seed=42, layers='all', rank=8, position='f7+l7', epochs=6, m=10, is_wandb=False, wandb_name='reft', save_model=False, max_n_train_example=None, max_n_eval_example=None, intervention_type='LoreftIntervention', gradient_accumulation_steps=2, batch_size=8, eval_batch_size=8, output_dir='./tier_results', lr=0.0009, schedule='linear', warmup_ratio=0.1, weight_decay=0.0, dropout=0.0, act_fn=None, add_bias=False, test_split='test', train_on_inputs=False, max_length=512, use_normalized_template=False, allow_cls_grad=False, metric_for_best_model='accuracy', dtype='bfloat16', logging_steps=1, wandb_dir='wandb', wandb_proj='MyReFT', share_weights=False, greedy_decoding=False, temperature=None, top_p=None, top_k=None, disable_reft=False, use_lora=False, lora_rank=8, lora_alpha=32, lora_modules='o_proj', lora_layers='2;10;18;26')
+model info: Qwen2Config {
+  "_name_or_path": "/data/ldn/llm-models/pruned_model_checkpoints/Qwen2.5-7B-Instruct-pruned-block-0",
+  "architectures": [
+    "Qwen2ForCausalLM"
+  ],
+  "attention_dropout": 0.0,
+  "bos_token_id": 151643,
+  "eos_token_id": 151645,
+  "hidden_act": "silu",
+  "hidden_size": 3584,
+  "initializer_range": 0.02,
+  "intermediate_size": 18944,
+  "max_position_embeddings": 32768,
+  "max_window_layers": 28,
+  "model_type": "qwen2",
+  "num_attention_heads": 28,
+  "num_hidden_layers": 27,
+  "num_key_value_heads": 4,
+  "rms_norm_eps": 1e-06,
+  "rope_scaling": null,
+  "rope_theta": 1000000.0,
+  "sliding_window": 131072,
+  "tie_word_embeddings": false,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.49.0",
+  "use_cache": true,
+  "use_sliding_window": false,
+  "vocab_size": 152064
+}
+
+run_name: -data-ldn-llm-models-pruned_model_checkpoints-Qwen2.5-7B-Instruct-pruned-block-0.gsm8k.2290c606-167d-11f0-a172-3cecefb44e37
+unk_token None
+pad_token None
+adding a special padding token...
+/data/ldn/datasets/gsm8k/model_name.llama-7b.position.f7+l7.interventions.27.max_n_example.None.split.train.cache
+Processing and caching results...
+  0%|          | 0/7473 [00:00<?, ?it/s]  1%|          | 41/7473 [00:00<00:18, 405.28it/s]  1%|          | 86/7473 [00:00<00:17, 429.91it/s]  2%|▏         | 132/7473 [00:00<00:16, 440.66it/s]  2%|▏         | 180/7473 [00:00<00:16, 452.72it/s]  3%|▎         | 226/7473 [00:00<00:15, 454.95it/s]  4%|▎         | 272/7473 [00:00<00:15, 454.12it/s]  4%|▍         | 320/7473 [00:00<00:15, 460.90it/s]  5%|▍         | 367/7473 [00:00<00:15, 459.58it/s]  6%|▌         | 414/7473 [00:00<00:15, 460.55it/s]  6%|▌         | 461/7473 [00:01<00:15, 461.71it/s]  7%|▋         | 509/7473 [00:01<00:14, 465.04it/s]  8%|▊         | 561/7473 [00:01<00:14, 480.15it/s]  8%|▊         | 610/7473 [00:01<00:14, 480.07it/s]  9%|▉         | 660/7473 [00:01<00:14, 484.27it/s] 10%|▉         | 713/7473 [00:01<00:13, 496.73it/s] 10%|█         | 763/7473 [00:01<00:13, 494.27it/s] 11%|█         | 813/7473 [00:01<00:13, 491.68it/s] 12%|█▏        | 864/7473 [00:01<00:13, 494.07it/s] 12%|█▏        | 915/7473 [00:01<00:13, 497.60it/s] 13%|█▎        | 965/7473 [00:02<00:19, 334.81it/s] 14%|█▎        | 1016/7473 [00:02<00:17, 372.65it/s] 14%|█▍        | 1066/7473 [00:02<00:15, 403.07it/s] 15%|█▍        | 1115/7473 [00:02<00:14, 424.13it/s] 16%|█▌        | 1165/7473 [00:02<00:14, 442.57it/s] 16%|█▌        | 1213/7473 [00:02<00:13, 452.66it/s] 17%|█▋        | 1262/7473 [00:02<00:13, 461.92it/s] 18%|█▊        | 1312/7473 [00:02<00:13, 471.97it/s] 18%|█▊        | 1364/7473 [00:03<00:12, 483.80it/s] 19%|█▉        | 1414/7473 [00:03<00:12, 483.56it/s] 20%|█▉        | 1464/7473 [00:03<00:12, 485.46it/s] 20%|██        | 1516/7473 [00:03<00:12, 494.26it/s] 21%|██        | 1566/7473 [00:03<00:12, 489.89it/s] 22%|██▏       | 1616/7473 [00:03<00:11, 490.19it/s] 22%|██▏       | 1668/7473 [00:03<00:11, 498.12it/s] 23%|██▎       | 1718/7473 [00:03<00:11, 498.64it/s] 24%|██▎       | 1768/7473 [00:03<00:11, 496.81it/s] 24%|██▍       | 1818/7473 [00:03<00:11, 496.23it/s] 25%|██▍       | 1868/7473 [00:04<00:11, 487.11it/s] 26%|██▌       | 1917/7473 [00:04<00:11, 482.35it/s] 26%|██▋       | 1966/7473 [00:04<00:11, 478.12it/s] 27%|██▋       | 2015/7473 [00:04<00:11, 481.49it/s] 28%|██▊       | 2068/7473 [00:04<00:11, 491.01it/s] 28%|██▊       | 2118/7473 [00:04<00:10, 493.30it/s] 29%|██▉       | 2169/7473 [00:04<00:10, 495.26it/s] 30%|██▉       | 2219/7473 [00:04<00:10, 495.42it/s] 30%|███       | 2269/7473 [00:04<00:10, 495.30it/s] 31%|███       | 2319/7473 [00:04<00:10, 496.00it/s] 32%|███▏      | 2370/7473 [00:05<00:10, 497.90it/s] 32%|███▏      | 2421/7473 [00:05<00:10, 498.66it/s] 33%|███▎      | 2474/7473 [00:05<00:09, 507.68it/s] 34%|███▍      | 2525/7473 [00:05<00:09, 502.23it/s] 35%|███▍      | 2580/7473 [00:05<00:09, 514.51it/s] 35%|███▌      | 2632/7473 [00:05<00:09, 515.46it/s] 36%|███▌      | 2686/7473 [00:05<00:09, 519.74it/s] 37%|███▋      | 2738/7473 [00:05<00:09, 513.74it/s] 37%|███▋      | 2790/7473 [00:05<00:09, 514.83it/s] 38%|███▊      | 2842/7473 [00:05<00:08, 514.58it/s] 39%|███▊      | 2894/7473 [00:06<00:09, 502.26it/s] 39%|███▉      | 2947/7473 [00:06<00:08, 509.13it/s] 40%|████      | 2999/7473 [00:06<00:08, 510.52it/s] 41%|████      | 3051/7473 [00:06<00:08, 505.78it/s] 42%|████▏     | 3103/7473 [00:06<00:08, 508.38it/s] 42%|████▏     | 3154/7473 [00:06<00:08, 495.60it/s] 43%|████▎     | 3204/7473 [00:06<00:08, 495.06it/s] 44%|████▎     | 3254/7473 [00:06<00:08, 495.67it/s] 44%|████▍     | 3304/7473 [00:06<00:08, 494.80it/s] 45%|████▍     | 3354/7473 [00:06<00:08, 491.05it/s] 46%|████▌     | 3404/7473 [00:07<00:08, 491.23it/s] 46%|████▌     | 3454/7473 [00:07<00:08, 489.28it/s] 47%|████▋     | 3506/7473 [00:07<00:08, 495.40it/s] 48%|████▊     | 3556/7473 [00:07<00:07, 495.77it/s] 48%|████▊     | 3608/7473 [00:07<00:07, 500.98it/s] 49%|████▉     | 3659/7473 [00:07<00:07, 496.73it/s] 50%|████▉     | 3709/7473 [00:07<00:07, 495.16it/s] 50%|█████     | 3759/7473 [00:07<00:07, 491.13it/s] 51%|█████     | 3810/7473 [00:07<00:07, 494.65it/s] 52%|█████▏    | 3860/7473 [00:08<00:07, 494.73it/s] 52%|█████▏    | 3913/7473 [00:08<00:07, 504.02it/s] 53%|█████▎    | 3964/7473 [00:08<00:06, 503.87it/s] 54%|█████▎    | 4016/7473 [00:08<00:06, 506.62it/s] 54%|█████▍    | 4068/7473 [00:08<00:06, 508.81it/s] 55%|█████▌    | 4119/7473 [00:08<00:06, 506.10it/s] 56%|█████▌    | 4170/7473 [00:08<00:06, 497.77it/s] 56%|█████▋    | 4220/7473 [00:08<00:06, 496.44it/s] 57%|█████▋    | 4271/7473 [00:08<00:06, 498.83it/s] 58%|█████▊    | 4321/7473 [00:08<00:06, 495.03it/s] 59%|█████▊    | 4375/7473 [00:09<00:06, 505.68it/s] 59%|█████▉    | 4426/7473 [00:09<00:06, 497.70it/s] 60%|█████▉    | 4476/7473 [00:09<00:06, 495.18it/s] 61%|██████    | 4526/7473 [00:09<00:06, 482.19it/s] 61%|██████    | 4575/7473 [00:09<00:09, 311.90it/s] 62%|██████▏   | 4625/7473 [00:09<00:08, 351.35it/s] 63%|██████▎   | 4675/7473 [00:09<00:07, 384.65it/s] 63%|██████▎   | 4727/7473 [00:09<00:06, 417.54it/s] 64%|██████▍   | 4778/7473 [00:10<00:06, 439.59it/s] 65%|██████▍   | 4829/7473 [00:10<00:05, 457.24it/s] 65%|██████▌   | 4878/7473 [00:10<00:05, 460.11it/s] 66%|██████▌   | 4930/7473 [00:10<00:05, 475.07it/s] 67%|██████▋   | 4980/7473 [00:10<00:05, 479.34it/s] 67%|██████▋   | 5032/7473 [00:10<00:04, 489.23it/s] 68%|██████▊   | 5084/7473 [00:10<00:04, 495.69it/s] 69%|██████▊   | 5135/7473 [00:10<00:04, 499.07it/s] 69%|██████▉   | 5186/7473 [00:10<00:04, 502.10it/s] 70%|███████   | 5239/7473 [00:10<00:04, 508.59it/s] 71%|███████   | 5291/7473 [00:11<00:04, 504.98it/s] 71%|███████▏  | 5342/7473 [00:11<00:04, 505.34it/s] 72%|███████▏  | 5393/7473 [00:11<00:04, 503.85it/s] 73%|███████▎  | 5446/7473 [00:11<00:03, 511.35it/s] 74%|███████▎  | 5498/7473 [00:11<00:03, 502.38it/s] 74%|███████▍  | 5549/7473 [00:11<00:03, 503.23it/s] 75%|███████▍  | 5600/7473 [00:11<00:03, 503.95it/s] 76%|███████▌  | 5653/7473 [00:11<00:03, 509.70it/s] 76%|███████▋  | 5705/7473 [00:11<00:03, 508.54it/s] 77%|███████▋  | 5756/7473 [00:11<00:03, 505.21it/s] 78%|███████▊  | 5807/7473 [00:12<00:03, 506.54it/s] 78%|███████▊  | 5859/7473 [00:12<00:03, 508.67it/s] 79%|███████▉  | 5910/7473 [00:12<00:03, 502.46it/s] 80%|███████▉  | 5961/7473 [00:12<00:03, 493.55it/s] 80%|████████  | 6011/7473 [00:12<00:02, 490.42it/s] 81%|████████  | 6065/7473 [00:12<00:02, 504.10it/s] 82%|████████▏ | 6118/7473 [00:12<00:02, 510.99it/s] 83%|████████▎ | 6170/7473 [00:12<00:02, 505.77it/s] 83%|████████▎ | 6222/7473 [00:12<00:02, 508.15it/s] 84%|████████▍ | 6275/7473 [00:13<00:02, 509.67it/s] 85%|████████▍ | 6326/7473 [00:13<00:02, 506.05it/s] 85%|████████▌ | 6377/7473 [00:13<00:02, 502.83it/s] 86%|████████▌ | 6428/7473 [00:13<00:02, 493.90it/s] 87%|████████▋ | 6480/7473 [00:13<00:01, 500.92it/s] 87%|████████▋ | 6531/7473 [00:13<00:01, 502.94it/s] 88%|████████▊ | 6585/7473 [00:13<00:01, 511.18it/s] 89%|████████▉ | 6637/7473 [00:13<00:01, 506.57it/s] 89%|████████▉ | 6688/7473 [00:13<00:01, 507.00it/s] 90%|█████████ | 6739/7473 [00:13<00:01, 503.32it/s] 91%|█████████ | 6790/7473 [00:14<00:01, 502.25it/s] 92%|█████████▏| 6841/7473 [00:14<00:01, 501.56it/s] 92%|█████████▏| 6893/7473 [00:14<00:01, 505.59it/s] 93%|█████████▎| 6945/7473 [00:14<00:01, 508.79it/s] 94%|█████████▎| 6996/7473 [00:14<00:00, 500.87it/s] 94%|█████████▍| 7047/7473 [00:14<00:00, 499.92it/s] 95%|█████████▍| 7099/7473 [00:14<00:00, 504.71it/s] 96%|█████████▌| 7150/7473 [00:14<00:00, 502.11it/s] 96%|█████████▋| 7202/7473 [00:14<00:00, 505.71it/s] 97%|█████████▋| 7255/7473 [00:14<00:00, 512.12it/s] 98%|█████████▊| 7308/7473 [00:15<00:00, 516.66it/s] 98%|█████████▊| 7360/7473 [00:15<00:00, 505.60it/s] 99%|█████████▉| 7411/7473 [00:15<00:00, 502.02it/s]100%|█████████▉| 7463/7473 [00:15<00:00, 505.60it/s]100%|██████████| 7473/7473 [00:15<00:00, 485.64it/s]
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+train ds 0:  {'input_ids': tensor([151665,     45,   4212,    685,   6088,  26111,    311,    220,     19,
+            23,    315,   1059,   4780,    304,   5813,     11,    323,   1221,
+          1340,   6088,   4279,    438,   1657,  26111,    304,   3217,     13,
+          2585,   1657,  26111,   1521,  41601,    685,   4559,  30055,    304,
+          5813,    323,   3217,   5267,  16141,    279,   3403,   3405,     13,
+          5512,   1744,   3019,    553,   3019,    323,   1221,   4226,    279,
+          1590,   1372,    624,     45,   4212,    685,   6088,    220,     19,
+            23,     14,     17,    284,   1115,     19,     23,     14,     17,
+            28,     17,     19,   2452,     17,     19,  26111,    304,   3217,
+           624,     45,   4212,    685,   6088,    220,     19,     23,     10,
+            17,     19,    284,   1115,     19,     23,     10,     17,     19,
+            28,     22,     17,   2452,     22,     17,  26111,  30055,    304,
+          5813,    323,   3217,    624,    820,    220,     22,     17, 151645]), 'labels': tensor([  -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,   -100,
+          -100,   -100,   -100,     45,   4212,    685,   6088,    220,     19,
+            23,     14,     17,    284,   1115,     19,     23,     14,     17,
+            28,     17,     19,   2452,     17,     19,  26111,    304,   3217,
+           624,     45,   4212,    685,   6088,    220,     19,     23,     10,
+            17,     19,    284,   1115,     19,     23,     10,     17,     19,
+            28,     22,     17,   2452,     22,     17,  26111,  30055,    304,
+          5813,    323,   3217,    624,    820,    220,     22,     17, 151645]), 'intervention_locations': [[1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56], [1, 2, 3, 4, 5, 6, 7, 50, 51, 52, 53, 54, 55, 56]], 'id': 0, 'attention_mask': tensor([0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+       dtype=torch.int32)}
+Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]Loading checkpoint shards:   0%|          | 0/2 [00:03<?, ?it/s]
+Traceback (most recent call last):
+  File "/data/ldn/llmtools/tier-complex/tier_train.py", line 279, in <module>
+    main()
+  File "/data/ldn/llmtools/tier-complex/tier_train.py", line 275, in main
+    train(args)
+  File "/data/ldn/llmtools/tier-complex/tier_train.py", line 77, in train
+    model, model_config = load_base_model(
+  File "/data/ldn/llmtools/tier-complex/utils.py", line 462, in load_base_model
+    model = AutoModelForCausalLM.from_pretrained(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 564, in from_pretrained
+    return model_class.from_pretrained(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/modeling_utils.py", line 262, in _wrapper
+    return func(*args, **kwargs)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4319, in from_pretrained
+    ) = cls._load_pretrained_model(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/modeling_utils.py", line 4927, in _load_pretrained_model
+    gc.collect()
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/data/ldn/llmtools/tier-complex/tier_train.py", line 5, in <module>
+    import torch
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/__init__.py", line 2486, in <module>
+    from torch import _meta_registrations
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_meta_registrations.py", line 10, in <module>
+    from torch._decomp import (
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_decomp/__init__.py", line 249, in <module>
+    import torch._decomp.decompositions
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_decomp/decompositions.py", line 15, in <module>
+    import torch._prims as prims
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_prims/__init__.py", line 756, in <module>
+    expm1 = _make_elementwise_unary_prim(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_prims/__init__.py", line 491, in _make_elementwise_unary_prim
+    return _make_prim(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_prims/__init__.py", line 319, in _make_prim
+    prim_def = torch.library.custom_op(
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 157, in custom_op
+    return inner(fn)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 138, in inner
+    result = CustomOpDef(namespace, opname, schema_str, fn)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 186, in __init__
+    self._register_to_dispatcher()
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/custom_ops.py", line 616, in _register_to_dispatcher
+    lib._register_fake(self._name, fake_impl, _stacklevel=4)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/library.py", line 184, in _register_fake
+    handle = entry.fake_impl.register(func_to_register, source)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/fake_impl.py", line 62, in register
+    meta_kernel = construct_meta_kernel(self.qualname, self)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/torch/_library/fake_impl.py", line 78, in construct_meta_kernel
+    def meta_kernel(*args, **kwargs):
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/functools.py", line 58, in update_wrapper
+    getattr(wrapper, attr).update(getattr(wrapped, attr, {}))
+KeyboardInterrupt
+Traceback (most recent call last):
+  File "/data/ldn/llmtools/tier-complex/tier_train.py", line 6, in <module>
+    from transformers import (
+  File "<frozen importlib._bootstrap>", line 1075, in _handle_fromlist
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 1851, in __getattr__
+    module = self._get_module(self._class_to_module[name])
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 1863, in _get_module
+    return importlib.import_module("." + module_name, self.__name__)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/data/__init__.py", line 28, in <module>
+    from .metrics import glue_compute_metrics, xnli_compute_metrics
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/transformers/data/metrics/__init__.py", line 20, in <module>
+    from sklearn.metrics import f1_score, matthews_corrcoef
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/sklearn/__init__.py", line 84, in <module>
+    from .base import clone
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/sklearn/base.py", line 19, in <module>
+    from .utils._estimator_html_repr import _HTMLDocumentationLinkMixin, estimator_html_repr
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/sklearn/utils/__init__.py", line 9, in <module>
+    from . import _joblib, metadata_routing
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/sklearn/utils/_joblib.py", line 9, in <module>
+    import joblib
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/joblib/__init__.py", line 114, in <module>
+    from .memory import Memory
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/joblib/memory.py", line 29, in <module>
+    from ._store_backends import CacheWarning  # noqa
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/joblib/_store_backends.py", line 20, in <module>
+    from . import numpy_pickle
+  File "/home/ldn/anaconda3/envs/tianchi/lib/python3.10/site-packages/joblib/numpy_pickle.py", line 19, in <module>
+    from .numpy_pickle_utils import _read_fileobject, _write_fileobject
+  File "<frozen importlib._bootstrap>", line 404, in parent
+KeyboardInterrupt

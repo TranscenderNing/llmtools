@@ -6,12 +6,13 @@ import os
 import random
 from dataclasses import dataclass
 from typing import Dict, Sequence
+import re
 
 import numpy as np
 import torch
 from datasets import Dataset
 from tier_interventions import (DualSpacesIntervention, GateLowRankEditor,
-                                FeedForwardIntervention, LoRAIntervention,
+                                GateLowRankEditor_1, GateLowRankEditor_2, FeedForwardIntervention, LoRAIntervention,
                                 LoreftIntervention, LoreftIntervention_v2,
                                 MloraIntervention, MoEIntervention,
                                 MosLoRAIntervention,
@@ -77,6 +78,8 @@ dtype_mapping = {
 
 intervention_mapping = {
     "LoreftIntervention": LoreftIntervention,
+    "GateLowRankEditor_1": GateLowRankEditor_1,
+    "GateLowRankEditor_2": GateLowRankEditor_2,
     "GateLowRankEditor": GateLowRankEditor,
     "LoRAIntervention": LoRAIntervention,
     "MoEIntervention": MoEIntervention,
@@ -944,6 +947,15 @@ def compute_metrics(
                         generation = extract_answer_number(raw_generation)
                         if abs(float(answer) - generation) <= 0.001:
                             correct_count += 1
+                elif task  == "gsm8k":
+                    answer = example["answer"]
+                    answer = answer.split("####")[-1].strip()
+                    answer = answer.replace(",", "")
+                    generation = extract_answer_number(raw_generation)
+                    print(f"answer: {answer}")
+                    print(f"generation: {generation}")
+                    if abs(float(answer) - generation) <= 0.001:
+                        correct_count += 1
 
                 # log
                 total_count += 1
@@ -1137,8 +1149,12 @@ def test_gate_1():
 
             # Gate网络
             self.gate = nn.Sequential(
-                nn.Linear(hidden_size, 1),
+                nn.Linear(self.hidden_size, self.rank),
+                nn.ReLU(),
+                nn.Linear(self.rank, 1),
                 nn.Sigmoid()  # 输出0-1之间的分数
+                # nn.Linear(hidden_size, 1),
+                # nn.Sigmoid()  # 输出0-1之间的分数
             )
             
             # 低秩编辑网络
@@ -1175,6 +1191,10 @@ def test_gate_1():
             
             return output
 
+
+
+
+
     # 测试示例
     bs, seq_len, hidden_size = 2, 10, 128
     m = 3
@@ -1192,8 +1212,48 @@ def test_gate_1():
 
 
 
+
+
+def compute_acc(file_path = 'data.json'):
+    # 打开文件并读取内容
+    with open(file_path, 'r') as file:
+        accuracies = json.load(file)
+
+    # 打印读取到的数据
+    # print(accuracies)
+    del accuracies['eval/boolq']
+    del accuracies["eval/winogrande"]
+
+    # 计算每个数据集的准确率并输出
+    for dataset, accuracy in accuracies.items():
+        print(f"{dataset}: {accuracy * 100:.1f}%")
+
+    # 计算平均准确率
+    average_accuracy = sum(accuracies.values()) / len(accuracies)
+
+    # 输出平均准确率
+    print(f"\nAverage Accuracy: {average_accuracy * 100:.1f}%")
+
+
+
+
+
 if __name__ == "__main__":
-    test_gate_1()
+    # test_gate_1()
+    
+    # methods = {
+    #     "dora": "/data/ldn/llmtools/mistral-peft/tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.d25c8368-1038-11f0-972f-3cecefb44e37",
+    #     "lora": "/data/ldn/llmtools/mistral-peft/tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.978d222a-1037-11f0-9ddc-3cecefb44e37",
+    #     "pissa": "/data/ldn/llmtools/mistral-peft/tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.011fb0d4-103a-11f0-b250-3cecefb44e37",
+    #     "gate_edit": "/data/ldn/llmtools/tier-complex/tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.5ccbd8a0-102a-11f0-92e6-3cecefb44e37",
+    #     "gate_edit_1": "/data/ldn/llmtools/tier-complex/tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.68ea9674-135b-11f0-8a47-3cecefb44e37"
+    # }
+    # for method, path in methods.items():
+    #     print(f"processing {method}...")
+    #     compute_acc(os.path.join(path, "eval_results.json"))
+    
+    compute_acc("./tier_results/-data-ldn-llm-models-Qwen2.5-7B-Instruct.commonsense.a8b5ad72-190d-11f0-9045-3cecefb44e37/eval_results.json")
+    
     
 
 

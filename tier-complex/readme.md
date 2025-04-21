@@ -13,10 +13,10 @@ CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
   --greedy_decoding \
   --max_n_train_example 100 \
   --max_n_eval_example 20 \
-  --intervention_type GateLowRankEditor \
+  --intervention_type GateLowRankEditor_1 \
   --m 10 \
   -e 3 \
-  > logs/tier-Qwen2.5-7B-Instruct-gate-edit.log 2>&1 &
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit_1.log 2>&1 &
 ```
 
 
@@ -26,11 +26,55 @@ CUDA_VISIBLE_DEVICES=1 nohup python tier_train.py \
   --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
   --data_dir /data/ldn/datasets \
   --greedy_decoding \
+  --intervention_type GateLowRankEditor_1 \
+  --rank 8 \
+  --m 10 \
+  -e 1 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit-1-new.log 2>&1 &
+
+
+
+  CUDA_VISIBLE_DEVICES=0 nohup python tier_train.py \
+  --model_path /data/ldn/llm-models/Qwen2.5-7B-Instruct \
+  --data_dir /data/ldn/datasets \
+  --greedy_decoding \
+  --intervention_type GateLowRankEditor_2 \
+  --rank 8 \
+  --m 10 \
+  -e 1 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit-2-new.log 2>&1 &
+
+```
+
+
+
+```
+# 去掉第0层，效果应该会变差
+CUDA_VISIBLE_DEVICES=4 nohup python tier_train.py \
+  --model_path /data/ldn/llm-models/pruned_model_checkpoints/Qwen2.5-7B-Instruct-pruned-block-0 \
+  --task gsm8k \
+  --data_dir /data/ldn/datasets \
+  --greedy_decoding \
   --intervention_type GateLowRankEditor \
   --rank 8 \
   --m 10 \
-  -e 3 \
-  > logs/tier-Qwen2.5-7B-Instruct-gate-edit.log 2>&1 &
+  -e 6 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit-prune-0-gsm8k.log 2>&1 &
+
+
+
+
+#去掉第九层比去掉第0层应该要好一些
+  CUDA_VISIBLE_DEVICES=5 nohup python tier_train.py \
+  --model_path /data/ldn/llm-models/pruned_model_checkpoints/Qwen2.5-7B-Instruct-pruned-block-9 \
+  --task gsm8k \
+  --data_dir /data/ldn/datasets \
+  --greedy_decoding \
+  --intervention_type GateLowRankEditor \
+  --rank 8 \
+  --m 10 \
+  -e 6 \
+  > logs/tier-Qwen2.5-7B-Instruct-gate-edit-prune-9-gsm8k.log 2>&1 &
 
 ```
 

@@ -168,6 +168,161 @@ class GateLowRankEditor(nn.Module):
 
 
 
+class GateLowRankEditor_1(nn.Module):
+    def __init__(self, **kwargs):
+        super(GateLowRankEditor_1, self).__init__()
+        self.hidden_size = kwargs["embed_dim"]
+        self.m = kwargs["m"]
+        self.rank = kwargs["rank"]
+
+        # Gate网络
+        self.gate = nn.Sequential(
+            nn.Linear(self.hidden_size, self.rank),
+            nn.ReLU(),
+            nn.Linear(self.rank, 1),
+            nn.Sigmoid()  # 输出0-1之间的分数
+        ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+        
+        # 低秩编辑网络
+        # self.edit_network = nn.Sequential(
+        #     nn.Linear(self.hidden_size, self.rank, bias=False),
+        #     nn.ReLU(),
+        #     nn.Linear(self.rank, self.hidden_size, bias=False)
+        # ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+
+        rotate_layer = LowRankRotateLayer(
+            kwargs["embed_dim"], kwargs["rank"], init_orth=True
+        ).to(kwargs["device"])
+        self.rotate_layer = torch.nn.utils.parametrizations.orthogonal(rotate_layer).to(
+            kwargs["device"]
+        )
+        self.learned_source = (
+            torch.nn.Linear(kwargs["embed_dim"], kwargs["rank"])
+            .to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+            .to(kwargs["device"])
+        )
+        self.dropout = torch.nn.Dropout(
+            kwargs["dropout"] if "dropout" in kwargs else 0.0
+        ).to(kwargs["device"])
+        self.act_fn = (
+            ACT2FN["linear"]
+            if "act_fn" not in kwargs or kwargs["act_fn"] is None
+            else ACT2FN[kwargs["act_fn"]]
+        )
+
+
+    def forward(self, x):
+        
+        # 计算每个位置的分数 [bs, seq_len]
+        scores = self.gate(x).squeeze(-1)
+        
+        # 推理时直接使用topk
+        _, indices = torch.topk(scores, self.m, dim=1)
+        
+        # 收集选中的特征
+        selected_features = torch.gather(x, 1, 
+            indices.unsqueeze(-1).expand(-1, -1, self.hidden_size))
+        
+        # 应用低秩编辑
+        # edited_features = self.edit_network(selected_features)
+        
+        rotated_base = self.rotate_layer(selected_features)
+        edited_features = selected_features + torch.matmul(
+            (self.act_fn(self.learned_source(selected_features)) - rotated_base),
+            self.rotate_layer.weight.T,
+        )
+        edited_features =  self.dropout(edited_features.to(x.dtype))
+        
+        # 创建输出张量
+        output = x.clone()
+        
+        # 将编辑后的特征写回原位置
+        output.scatter_(
+            dim=1,
+            index=indices.unsqueeze(-1).expand(-1, -1, self.hidden_size),
+            src=edited_features
+        )
+        
+        return output
+
+class GateLowRankEditor_2(nn.Module):
+    def __init__(self, **kwargs):
+        super(GateLowRankEditor_2, self).__init__()
+        self.hidden_size = kwargs["embed_dim"]
+        self.m = kwargs["m"]
+        self.rank = kwargs["rank"]
+
+        # Gate网络
+        self.gate = nn.Sequential(
+            nn.Linear(self.hidden_size, self.rank),
+            nn.ReLU(),
+            nn.Linear(self.rank, self.hidden_size),
+            nn.Linear(self.hidden_size, 1),
+            nn.Sigmoid()  # 输出0-1之间的分数
+        ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+        
+        # 低秩编辑网络
+        # self.edit_network = nn.Sequential(
+        #     nn.Linear(self.hidden_size, self.rank, bias=False),
+        #     nn.ReLU(),
+        #     nn.Linear(self.rank, self.hidden_size, bias=False)
+        # ).to(kwargs["device"]).to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+
+        rotate_layer = LowRankRotateLayer(
+            kwargs["embed_dim"], kwargs["rank"], init_orth=True
+        ).to(kwargs["device"])
+        self.rotate_layer = torch.nn.utils.parametrizations.orthogonal(rotate_layer).to(
+            kwargs["device"]
+        )
+        self.learned_source = (
+            torch.nn.Linear(kwargs["embed_dim"], kwargs["rank"])
+            .to(kwargs["dtype"] if "dtype" in kwargs else torch.bfloat16)
+            .to(kwargs["device"])
+        )
+        self.dropout = torch.nn.Dropout(
+            kwargs["dropout"] if "dropout" in kwargs else 0.0
+        ).to(kwargs["device"])
+        self.act_fn = (
+            ACT2FN["linear"]
+            if "act_fn" not in kwargs or kwargs["act_fn"] is None
+            else ACT2FN[kwargs["act_fn"]]
+        )
+
+
+    def forward(self, x):
+        
+        # 计算每个位置的分数 [bs, seq_len]
+        scores = self.gate(x).squeeze(-1)
+        
+        # 推理时直接使用topk
+        _, indices = torch.topk(scores, self.m, dim=1)
+        
+        # 收集选中的特征
+        selected_features = torch.gather(x, 1, 
+            indices.unsqueeze(-1).expand(-1, -1, self.hidden_size))
+        
+        # 应用低秩编辑
+        # edited_features = self.edit_network(selected_features)
+        
+        rotated_base = self.rotate_layer(selected_features)
+        edited_features = selected_features + torch.matmul(
+            (self.act_fn(self.learned_source(selected_features)) - rotated_base),
+            self.rotate_layer.weight.T,
+        )
+        edited_features =  self.dropout(edited_features.to(x.dtype))
+        
+        # 创建输出张量
+        output = x.clone()
+        
+        # 将编辑后的特征写回原位置
+        output.scatter_(
+            dim=1,
+            index=indices.unsqueeze(-1).expand(-1, -1, self.hidden_size),
+            src=edited_features
+        )
+        
+        return output
+
 class LoreftIntervention_v2(nn.Module):
     """
     LoReFT(h) = h + R^T(Wh + b − Rh) + W^T(Rh - wh -b)
