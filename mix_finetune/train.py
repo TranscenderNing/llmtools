@@ -36,16 +36,16 @@ def load_mix_model(
         torch_dtype=torch.bfloat16,
     )
     # get peft model
-    # config = MELoraConfig(
-    #     r=[lora_r] * lora_n,
-    #     lora_alpha=[lora_alpha] * lora_n,
-    #     target_modules=lora_target_modules,
-    #     lora_dropout=lora_dropout,
-    #     bias="none",
-    #     mode=mode,
-    #     task_type="CAUSAL_LM",
-    # )
-    # model = get_peft_model(model, config)
+    config = MELoraConfig(
+        r=[lora_r] * lora_n,
+        lora_alpha=[lora_alpha] * lora_n,
+        target_modules=lora_target_modules,
+        lora_dropout=lora_dropout,
+        bias="none",
+        mode=mode,
+        task_type="CAUSAL_LM",
+    )
+    model = get_peft_model(model, config)
     model = RepresentationLLama(model, op_position='post_attention_layernorm')
     return model
 
